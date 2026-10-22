@@ -1,0 +1,182 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import CardStack from '../components/CardStack.astro';
+import ContactCards from '../components/ContactCards.astro';
+import QuestMedia from '../components/QuestMedia.astro';
+import Icon from '../components/Icon.astro';
+import { quests } from '../data/quests';
+import { site } from '../data/site';
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const headingLead = 'A designer and researcher for'.split(' ');
+const headingAccent = 'complex & regulated products'.split(' ');
+const logos = [
+  ['work-gwn.svg', 'GWN'],
+  ['work-rrg.svg', 'RRG Studio'],
+  ['work-hacktiv8.svg', 'Hacktiv8'],
+  ['work-gasyla.svg', 'Gasyla'],
+  ['work-trustmedis.png', 'Trustmedis'],
+  ['work-bvarta.png', 'Bvarta'],
+  ['work-binar.svg', 'Binar'],
+  ['work-growmodo.svg', 'Growmodo'],
+  ['work-tvsd.svg', 'TVS Digital'],
+];
+---
+
+<Base>
+  <section id="hero" class="hero home-section" aria-labelledby="hero-heading">
+    <div class="hero-intro container">
+      <p class="availability">
+        <span aria-hidden="true"></span>
+        {site.availability}
+      </p>
+      <h1 id="hero-heading">
+        {headingLead.map((word, index) => (
+          <>
+            <span class="hero-word" style={`--word-index: ${index}`}>
+              {word}
+            </span>{' '}
+          </>
+        ))}
+        <br class="desktop-break" />{' '}
+        <strong>
+          {headingAccent.map((word, index) => (
+            <>
+              <span class="hero-word" style={`--word-index: ${headingLead.length + index}`}>
+                {word}
+              </span>
+              {index < headingAccent.length - 1 ? ' ' : ''}
+            </>
+          ))}
+        </strong>
+      </h1>
+    </div>
+    <CardStack />
+    <div class="logo-conveyor" aria-label="Companies I’ve worked with">
+      <div class="logo-track">
+        {[0, 1].map((copy) => (
+          <div class="logo-group" aria-hidden={copy === 1 ? 'true' : undefined}>
+            {logos.map(([file, label]) => (
+              <img
+                src={`/logos/${file}`}
+                alt={copy === 0 ? label : ''}
+                width="180"
+                height="48"
+                loading="lazy"
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  <section id="work" class="work-section home-section container" aria-labelledby="work-heading">
+    <h2 id="work-heading" class="section-title" data-reveal>
+      Selected Work
+    </h2>
+    <div class="work-grid">
+      {projects.map((project) => (
+        <a class="project-card" href={`/work/${project.id}/`} data-reveal>
+          <div class:list={['project-cover', { 'finodus-cover': project.id === 'finodus' }]}>
+            {project.data.cover ? (
+              <img src={project.data.cover} alt="" loading="lazy" width="960" height="560" />
+            ) : (
+              <>
+                <span class="cover-index">0{project.data.order} / SELECTED WORK</span>
+                <span class="cover-title">
+                  {project.id === 'finodus' ? 'Finodus' : 'Your next\ncase study.'}
+                </span>
+                <span class="cover-note">
+                  Image placeholder <span aria-hidden="true">↗</span>
+                </span>
+              </>
+            )}
+          </div>
+          <div class="project-copy">
+            <h3>
+              {project.data.title}
+              <span class="project-arrow" aria-hidden="true">
+                ↗
+              </span>
+            </h3>
+            <p>{project.data.summary}</p>
+            <ul class="tags" aria-label="Project categories">
+              {project.data.tags.map((tag) => (
+                <li>{tag}</li>
+              ))}
+            </ul>
+            {project.data.placeholder && (
+              <span class="draft-note">
+                {project.id === 'finodus' ? 'Draft case study' : 'Placeholder project'}
+              </span>
+            )}
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+  <section
+    id="quests"
+    class="quests-section home-section container"
+    aria-labelledby="quests-heading"
+  >
+    <h2 id="quests-heading" class="section-title" data-reveal>
+      Experiments and explorations
+    </h2>
+    <div class="quests-grid">
+      {[quests.slice(0, 3), quests.slice(3)].map((column) => (
+        <div class="quest-column">
+          {column.map((quest) => (
+            <button
+              type="button"
+              class="quest-card"
+              data-quest-open={`quest-${quest.id}`}
+              aria-label={`Open ${quest.title}`}
+              aria-haspopup="dialog"
+              data-reveal
+            >
+              <QuestMedia quest={quest} />
+            </button>
+          ))}
+        </div>
+      ))}
+    </div>
+    {quests.map((quest) => (
+      <dialog
+        id={`quest-${quest.id}`}
+        class="quest-dialog"
+        aria-labelledby={`quest-title-${quest.id}`}
+      >
+        <button
+          type="button"
+          class="dialog-close"
+          data-dialog-close
+          aria-label="Close exploration"
+          autofocus
+        >
+          <Icon name="mobile-menu-opened" />
+        </button>
+        <QuestMedia quest={quest} modal />
+        <div class="quest-dialog-copy">
+          <p class="eyebrow">Experiment / {quest.id}</p>
+          <h3 id={`quest-title-${quest.id}`}>{quest.title}</h3>
+          <p>{quest.description}</p>
+        </div>
+      </dialog>
+    ))}
+  </section>
+  <section
+    id="contact"
+    class="contact-section home-section container"
+    aria-labelledby="contact-heading"
+  >
+    <h2 id="contact-heading" data-reveal>
+      I’m currently open for
+      <br />
+      <strong>full-time opportunities</strong>
+      <br />
+      and short-term projects
+    </h2>
+    <ContactCards />
+  </section>
+</Base>

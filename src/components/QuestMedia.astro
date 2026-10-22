@@ -1,0 +1,43 @@
+---
+import type { Quest } from '../data/quests';
+interface Props {
+  quest: Quest;
+  modal?: boolean;
+}
+const { quest, modal = false } = Astro.props;
+---
+
+<div
+  class:list={[
+    'quest-media',
+    `quest-${quest.aspect}`,
+    `quest-art-${quest.id}`,
+    { 'modal-media': modal },
+  ]}
+>
+  {quest.media ? (
+    quest.type === 'video' ? (
+      <video
+        src={quest.media}
+        poster={quest.poster}
+        muted
+        loop
+        playsinline
+        preload="none"
+        controls={modal}
+        aria-label={quest.title}
+      ></video>
+    ) : (
+      <img src={quest.media} alt={quest.title} loading="lazy" width="800" height="800" />
+    )
+  ) : (
+    <div class="quest-placeholder">
+      <span class="quest-number">{quest.id}</span>
+      <span class="quest-placeholder-label">
+        A little space for
+        <br />a new exploration.
+      </span>
+      <span class="placeholder-note">Media placeholder</span>
+    </div>
+  )}
+</div>

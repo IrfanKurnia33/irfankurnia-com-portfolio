@@ -1,0 +1,109 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+export async function getStaticPaths() {
+  return (await getCollection('projects')).map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+const { project } = Astro.props;
+const { Content, headings } = await render(project);
+const sections = headings.filter((heading) => heading.depth === 2);
+---
+
+<Base page="work" title={`${project.data.title} — Irfan Kurnia`} description={project.data.summary}>
+  <article class="case-study container">
+    <a class="back-link" href="/#work">
+      <Icon name="back" />
+      Back to Work
+    </a>
+    <header class="case-header">
+      <div>
+        <p class="eyebrow">{project.data.placeholder ? 'Draft case study' : 'Selected work'}</p>
+        <h1>{project.data.title}</h1>
+        <p class="case-summary">{project.data.summary}</p>
+        <ul class="tags" aria-label="Project categories">
+          {project.data.tags.map((tag) => (
+            <li>{tag}</li>
+          ))}
+        </ul>
+      </div>
+      <dl class="project-meta">
+        <div>
+          <dt>Role</dt>
+          <dd>{project.data.role}</dd>
+        </div>
+        <div>
+          <dt>Timeline</dt>
+          <dd>{project.data.timeline}</dd>
+        </div>
+        <div>
+          <dt>Date</dt>
+          <dd>{project.data.date}</dd>
+        </div>
+        <div>
+          <dt>Tools</dt>
+          <dd>{project.data.tools.join(', ')}</dd>
+        </div>
+      </dl>
+    </header>
+    <div class="case-featured">
+      {project.data.cover ? (
+        <img
+          src={project.data.cover}
+          alt={`${project.data.title} — project overview`}
+          width="1200"
+          height="640"
+        />
+      ) : (
+        <>
+          <span class="eyebrow">Featured image placeholder</span>
+          <span>
+            Room for the
+            <br />
+            <strong>whole picture.</strong>
+          </span>
+          <p>Add a project image or a transparent PNG.</p>
+        </>
+      )}
+    </div>
+    {project.data.placeholder && (
+      <aside class="draft-banner">
+        <span aria-hidden="true">✳</span>
+        <p>
+          <strong>A work in progress.</strong> This page demonstrates the case-study layout.
+          Unfinished content and unverified outcomes are marked below.
+        </p>
+      </aside>
+    )}
+    <div class="case-body">
+      <aside class="toc">
+        <details open>
+          <summary>
+            On this page <span aria-hidden="true">⌄</span>
+          </summary>
+          <nav aria-label="Table of contents">
+            {sections.map((heading, i) => (
+              <a href={`#${heading.slug}`} data-toc-link>
+                <span>{String(i + 1).padStart(2, '0')}</span>
+                {heading.text}
+              </a>
+            ))}
+          </nav>
+        </details>
+      </aside>
+      <div class="case-prose prose">
+        <Content />
+        <a class="back-link article-back" href="/#work">
+          <Icon name="back" />
+          Back to selected work
+        </a>
+      </div>
+    </div>
+  </article>
+</Base>
