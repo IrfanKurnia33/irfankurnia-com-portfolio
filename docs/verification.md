@@ -1,12 +1,19 @@
-# Verification — October 21, 2026
+# Verification — October 22, 2026
 
 ## Automated checks
 
 - `npm run check`: zero errors, warnings, or hints.
-- `npm run build`: seven static pages generated successfully, with responsive WebP photographs.
-- Last full `npm test` run: 23 passed; one desktop run intentionally skipped because that test exercises the mobile navigation. The corresponding mobile test passed.
+- `npm run build`: eleven static pages generated successfully, including full and TL;DR routes for all four case studies, with responsive WebP photographs.
+- Case-study header adjustments: Astro check/build and 14 targeted desktop/mobile browser checks passed against the production preview. The eyebrow above the title is removed and the toggle follows the featured image. Separate browser checks exercised all three project-button types with one, two, or no configured buttons; supplied icons, new-tab navigation, shared Full/TL;DR buttons, and layouts at 320, 402, and 1440 CSS pixels passed. The Now blog button uses the supplied live-link icon.
+- Last full browser suite against the production preview: 45 passed; one desktop run intentionally skipped because that test exercises the mobile navigation. The corresponding mobile test passed.
+- Mermaid: all six desktop/mobile checks passed, covering brand styling, accessible SVG names, left-to-right and top-down node order, mobile fit, lazy loading, breakpoint changes, Full/TL;DR switching, browser history, unique IDs, another case study, and readable source after a syntax error. Separate visual checks covered the Stratis diagrams, wrapped return-arrow labels, and the source fallback with JavaScript disabled. The local dev server was refreshed after installation and also renders the diagrams.
+- Back to Top: all eight Full/TL;DR routes were checked at desktop and mobile sizes. The supplied arrow icon, fixed placement, smooth intermediate scroll positions, keyboard activation, reduced-motion behavior, focus at the main content, preserved query parameters, and absence of a reload were verified. Home and Now retain their motion controls.
+- Case-study image zoom: all six desktop/mobile checks passed. These cover the hover/touch hint, original image source and alternative text, viewport fit, intact captions and picture sources, outside/Escape/button dismissal, focus containment and restoration, version switching without duplicate controls, animated exits, and changes to reduced motion. The open viewer and visible overlays passed automated WCAG A/AA checks. Visual review covered the Stratis image on desktop/mobile; its original image remains visible without JavaScript.
+- Case-study version checks: all eight desktop/mobile checks passed. These cover in-place Markdown and TOC switching, keyboard activation and retained focus, unchanged scroll position, Back/Forward, reloads and direct URLs, shared metadata, one Work card per pair, no duplicate heading IDs, unknown-version 404s, and navigation without JavaScript. Both versions passed Axe WCAG A/AA checks. The toggle measures 48px high, aligns with the featured image, and sits 24px below it at 320, 402, 768, and 1440 CSS pixels.
 - Quest exit polish: `npx playwright test --grep "Quest"` passed all four desktop/mobile checks. These cover all dismissal paths, focus and scroll lock during the exit, early and repeated dismissal, and reduced motion enabled while closing.
 - Axe checks reported no WCAG A/AA violations on Home, Now, Finodus, the 404 page, all five hero cards, all dock states, and the open Quest dialog in the tested Chrome desktop/mobile profiles.
+
+Case-study table polish was verified at 320, 402, 768, and 1440 CSS pixels. Wide tables stayed within the article and scrolled with the keyboard. The Stratis comparison table retained its copy, gained column/row header associations, and passed automated WCAG A/AA checks on desktop/mobile. Full/TL;DR switching preserved one wrapper per table. The styled no-JavaScript table remained readable without page overflow. Build, Astro checks, and all eight case-study browser tests passed.
 
 Browser tests cover section navigation, browser Back, all project routes, the custom 404, menu dismissal, TOC anchors, card state and autoplay, pause preferences, dialog focus containment and restoration, and the personal-blog destination.
 
@@ -15,6 +22,8 @@ UI polish checks also cover the word/card entrance sequence, interruption by the
 Clocks were checked with a fixed instant in Jakarta, Singapore, and New York. Tests verify different local dates and New York’s summer/winter offsets. Layout checks cover 320, 402, 768, 1024, and 1440 CSS pixels, a short viewport, and enlarged root text. Additional visual review covered the reference desktop/mobile compositions and article layouts.
 
 ## Local performance sample
+
+The production build reports a chunk-size warning for Mermaid's diagram dependencies. They load dynamically only when the selected case-study article contains a diagram. The performance samples below predate the Mermaid integration and do not measure diagram pages.
 
 These are single browser measurements against the production build on localhost, not Lighthouse scores or measurements from deployed visitors. Desktop and mobile samples ran while the browser suite was active, so machine contention can affect timing.
 
@@ -38,6 +47,7 @@ The samples included the first-visit entrance. Neither sample made external runt
 - Smooth brand scrolling was checked with motion enabled on desktop and mobile, including preservation of the current document. The Now page's fade-up entrance and the JavaScript-disabled homepage were also checked.
 - Quest dialog entrance and backdrop blur were inspected at intermediate and completed animation frames on desktop and mobile. Repeat opening, restored focus, manual pause, and reduced motion leave the dialog visible and usable.
 - The mobile hamburger morphs into a close icon and reverses on dismissal. Its links are Home, Resume, LinkedIn, and Now in that order; Escape dismissal was checked with motion enabled.
+- Both case-study toggle states were visually compared with the supplied desktop/mobile SVG references, using the supplied 18px icons and regular 14px Sora labels (12px on the narrowest screens).
 
 ## Practical limits and content remaining
 

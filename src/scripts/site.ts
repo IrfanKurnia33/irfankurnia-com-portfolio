@@ -1,4 +1,7 @@
 // Small, independent enhancements. All page copy is rendered by Astro.
+import { initCaseStudy } from './case-study';
+import { initDialog } from './dialog';
+
 const root = document.documentElement;
 root.dataset.enhanced = 'true';
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -33,7 +36,6 @@ function updateMotion() {
         : `${manualPause ? 'Resume' : 'Pause'} site animations`,
     );
     motionButton.querySelector('.motion-toggle-label')!.textContent = label;
-    motionButton.querySelector('.motion-toggle-symbol')!.textContent = motionPaused() ? '▶' : 'Ⅱ';
   }
   document.dispatchEvent(new Event('portfolio:motion'));
 }
@@ -50,8 +52,14 @@ motionButton?.addEventListener('click', () => {
 reducedMotion.addEventListener('change', updateMotion);
 updateMotion();
 
-// Clear entrance styles when they finish, including Back/Forward cache restores.
 const main = document.querySelector<HTMLElement>('main');
+// Case studies return focus and scroll to the beginning of the current page.
+document.querySelector<HTMLButtonElement>('.back-to-top')?.addEventListener('click', () => {
+  if (location.hash) history.replaceState(history.state, '', location.pathname + location.search);
+  window.scrollTo({ top: 0, behavior: motionPaused() ? 'instant' : 'smooth' });
+  main?.focus({ preventScroll: true });
+});
+// Clear entrance styles when they finish, including Back/Forward cache restores.
 document.addEventListener('animationend', (event) => {
   if (event.target === main && event.animationName === 'enter-up') delete root.dataset.pageEnter;
   if (
@@ -275,7 +283,6 @@ document.querySelectorAll<HTMLElement>('[data-card-stack]').forEach((stack) => {
       : paused
         ? 'Play'
         : 'Pause';
-    pause.querySelector('[data-pause-symbol]')!.textContent = paused ? '▶' : 'Ⅱ';
     schedule();
   }
   shuffle.addEventListener('click', () => advance(true));
@@ -350,90 +357,17 @@ if (document.querySelector('[data-clock]')) {
   });
 }
 
-// Keep dialogs modal until both the panel and backdrop finish their exit.
+// Quest cards and case-study images share modal motion and dismissal behavior.
 document.querySelectorAll<HTMLButtonElement>('[data-quest-open]').forEach((button) => {
   const dialog = document.getElementById(button.dataset.questOpen!) as HTMLDialogElement;
-  let exitAnimations: Animation[] | undefined;
-  function closeDialog() {
-    if (!dialog.open || exitAnimations) return;
-    if (motionPaused()) {
-      dialog.close();
-      return;
-    }
-    // Start from the rendered frame, even if the entrance is still in progress.
-    const panel = getComputedStyle(dialog);
-    const backdrop = getComputedStyle(dialog, '::backdrop');
-    const timing: KeyframeAnimationOptions = { duration: 220, easing: 'ease-in', fill: 'forwards' };
-    exitAnimations = [
-      dialog.animate(
-        [
-          { opacity: panel.opacity, transform: panel.transform },
-          { opacity: 0, transform: 'translateY(16px)' },
-        ],
-        { ...timing, id: 'quest-dialog-exit' },
-      ),
-      dialog.animate(
-        [
-          { backgroundColor: backdrop.backgroundColor, backdropFilter: backdrop.backdropFilter },
-          { backgroundColor: '#1d1d1d00', backdropFilter: 'blur(0px)' },
-        ],
-        { ...timing, id: 'quest-backdrop-exit', pseudoElement: '::backdrop' },
-      ),
-    ];
-    const currentExit = exitAnimations;
-    void Promise.allSettled(currentExit.map((animation) => animation.finished)).then(() => {
-      if (exitAnimations === currentExit && dialog.open) dialog.close();
-    });
-  }
+  const modal = initDialog(dialog, motionPaused);
   button.addEventListener('click', () => {
-    dialog.showModal();
-    document.body.classList.add('has-modal');
+    modal.open(button);
     const video = dialog.querySelector('video');
     if (video && !motionPaused()) void video.play().catch(() => {});
   });
-  dialog.querySelector('[data-dialog-close]')?.addEventListener('click', closeDialog);
-  dialog.addEventListener('cancel', (event) => {
-    event.preventDefault();
-    closeDialog();
-  });
-  document.addEventListener('portfolio:motion', () => {
-    if (motionPaused() && exitAnimations) dialog.close();
-  });
-  dialog.addEventListener('keydown', (event) => {
-    if (event.key !== 'Tab') return;
-    const controls = [
-      ...dialog.querySelectorAll<HTMLElement>(
-        'button, a[href], input, select, textarea, video[controls], [tabindex="0"]',
-      ),
-    ].filter((element) => element.getClientRects().length);
-    const first = controls[0];
-    const last = controls.at(-1);
-    if (!first || !last) return;
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  });
-  dialog.addEventListener('click', (event) => {
-    if (event.target !== dialog) return;
-    const rect = dialog.getBoundingClientRect();
-    if (
-      event.clientX < rect.left ||
-      event.clientX > rect.right ||
-      event.clientY < rect.top ||
-      event.clientY > rect.bottom
-    )
-      closeDialog();
-  });
   dialog.addEventListener('close', () => {
-    exitAnimations?.forEach((animation) => animation.cancel());
-    exitAnimations = undefined;
     dialog.querySelector('video')?.pause();
-    document.body.classList.remove('has-modal');
-    button.focus({ preventScroll: true });
   });
 });
 const videos = document.querySelectorAll<HTMLVideoElement>('.quest-card video');
@@ -465,30 +399,4 @@ document.addEventListener('visibilitychange', () => {
     });
 });
 
-// Use the same Markdown heading anchors for the desktop and mobile TOC.
-const toc = document.querySelector<HTMLDetailsElement>('.toc details');
-if (toc && matchMedia('(max-width: 700px)').matches) toc.open = false;
-const tocLinks = [...document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]')];
-if (tocLinks.length) {
-  const headingObserver = new IntersectionObserver(
-    (entries) => {
-      const active = entries
-        .filter((entry) => entry.isIntersecting)
-        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
-      if (active)
-        tocLinks.forEach((link) => {
-          if (link.hash === `#${active.target.id}`) link.setAttribute('aria-current', 'location');
-          else link.removeAttribute('aria-current');
-        });
-    },
-    { rootMargin: '-15% 0px -60% 0px', threshold: 0 },
-  );
-  document
-    .querySelectorAll('.case-prose h2')
-    .forEach((heading) => headingObserver.observe(heading));
-  tocLinks.forEach((link) =>
-    link.addEventListener('click', () => {
-      if (toc && matchMedia('(max-width: 700px)').matches) toc.open = false;
-    }),
-  );
-}
+initCaseStudy(motionPaused);

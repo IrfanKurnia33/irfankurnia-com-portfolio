@@ -231,7 +231,7 @@ const socials = [
       data-shuffle
       aria-label={`Shuffle ${variant === 'hero' ? 'hero cards' : 'photos'}`}
     >
-      <span aria-hidden="true">↻</span> Shuffle
+      <Icon name="shuffle" size={14} /> Shuffle
     </button>
     <span class="stack-count" aria-hidden="true">
       <span data-card-index>1</span> / {labels.length}
@@ -242,9 +242,8 @@ const socials = [
       aria-label="Pause automatic card shuffling"
       aria-pressed="false"
     >
-      <span data-pause-symbol aria-hidden="true">
-        Ⅱ
-      </span>
+      <Icon name="pause" size={14} class="control-pause-icon" />
+      <Icon name="play" size={14} class="control-play-icon" />
       <span data-pause-label>Pause</span>
     </button>
   </div>

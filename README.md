@@ -37,6 +37,8 @@ The mobile profile uses Chromium device emulation; it does not replace testing o
 
 See [the content guide](docs/content-guide.md) for projects, quests, photos, links, and update dates. See [verification notes](docs/verification.md) for tested scenarios and remaining limitations.
 
+Each case study pairs a full article in `src/content/projects/<slug>.md` with a short article in `src/content/projects/tldr/<slug>.md`. Shared metadata lives in the full file. Visitors can switch below the featured image, or open either version directly at `/work/<slug>/` and `/work/<slug>/tldr/`.
+
 The application has three main layers:
 
 - `src/content/` and `src/data/`: the writing and editable portfolio information.

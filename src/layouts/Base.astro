@@ -10,6 +10,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Dock from '../components/Dock.astro';
 import SpaceBackground from '../components/SpaceBackground.astro';
+import Icon from '../components/Icon.astro';
 import { site } from '../data/site';
 interface Props {
   title?: string;
@@ -79,17 +80,23 @@ const { title = site.title, description = site.description, page = 'home' } = As
     </main>
     <Footer />
     {page === 'home' && <Dock />}
-    <button
-      class="motion-toggle"
-      type="button"
-      aria-pressed="false"
-      aria-label="Pause site animations"
-    >
-      <span class="motion-toggle-symbol" aria-hidden="true">
-        Ⅱ
-      </span>
-      <span class="motion-toggle-label">Pause motion</span>
-    </button>
+    {page === 'work' ? (
+      <button class="back-to-top" type="button" aria-label="Back to top">
+        <Icon name="arrow-up" size={18} />
+        <span>Back to Top</span>
+      </button>
+    ) : (
+      <button
+        class="motion-toggle"
+        type="button"
+        aria-pressed="false"
+        aria-label="Pause site animations"
+      >
+        <Icon name="pause" size={14} class="motion-toggle-symbol control-pause-icon" />
+        <Icon name="play" size={14} class="motion-toggle-symbol control-play-icon" />
+        <span class="motion-toggle-label">Pause motion</span>
+      </button>
+    )}
     <script>
       import '../scripts/site';
     </script>
