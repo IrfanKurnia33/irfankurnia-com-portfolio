@@ -9,7 +9,7 @@ export const site = {
   // Switch off when the placeholder content has been replaced before publishing.
   preview: true,
   links: {
-    resume: 'https://drive.google.com/file/d/1CcST51cc7Tz8T9CnxOWgwdE22IMmDPTg/view?usp=drive_link',
+    resume: 'https://drive.google.com/file/d/17gMCYyPDdTe7lJrLUO9WInuIbM_jtA83/view',
     linkedin: 'https://www.linkedin.com/in/irfankurnia33/',
     medium: 'https://irfankurnia33.medium.com',
     substack: 'https://irfankurnia33.substack.com',

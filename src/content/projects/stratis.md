@@ -20,9 +20,9 @@ order: 2
 placeholder: false
 links:
   - type: prototype
-    url: https://www.figma.com/design/your-file
+    url: https://stratis-real-estate.vercel.app/#documents
   - type: repository
-    url: https://github.com/your-name/your-project
+    url: https://github.com/IrfanKurnia33/stratis-real-estate
 ---
 
 ## At a glance
