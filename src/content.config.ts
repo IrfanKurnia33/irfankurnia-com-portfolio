@@ -13,6 +13,16 @@ const projects = defineCollection({
     date: z.string(),
     tools: z.array(z.string()),
     cover: z.string().optional(),
+    links: z
+      .array(
+        z.object({
+          type: z.enum(['figma', 'repository', 'prototype']),
+          url: z.url({ protocol: /^https?$/ }),
+        }),
+      )
+      .min(1)
+      .max(2)
+      .optional(),
     order: z.number(),
     placeholder: z.boolean().default(true),
   }),
@@ -23,4 +33,10 @@ const now = defineCollection({
   schema: z.object({ updated: z.string() }),
 });
 
-export const collections = { projects, now };
+// Share project metadata with the full article; these files contain only the short version.
+const projectSummaries = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/projects/tldr' }),
+  schema: z.object({}),
+});
+
+export const collections = { projects, projectSummaries, now };

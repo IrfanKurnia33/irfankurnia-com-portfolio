@@ -1,0 +1,42 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import Icon from './Icon.astro';
+
+interface Props {
+  content: CollectionEntry<'projects'> | CollectionEntry<'projectSummaries'>;
+  mode: 'full' | 'tldr';
+}
+const { content, mode } = Astro.props;
+const { Content, headings } = await render(content);
+const sections = headings.filter((heading) => heading.depth === 2);
+---
+
+<div
+  class:list={['case-body', { 'case-body-no-toc': sections.length === 0 }]}
+  data-case-mode={mode}
+>
+  {sections.length > 0 && (
+    <aside class="toc">
+      <details open>
+        <summary>
+          On this page <span aria-hidden="true">⌄</span>
+        </summary>
+        <nav aria-label="Table of contents">
+          {sections.map((heading, i) => (
+            <a href={`#${heading.slug}`} data-toc-link>
+              <span>{String(i + 1).padStart(2, '0')}</span>
+              {heading.text}
+            </a>
+          ))}
+        </nav>
+      </details>
+    </aside>
+  )}
+  <div class="case-prose prose">
+    <Content />
+    <a class="back-link article-back" href="/#work">
+      <Icon name="back" />
+      Back to selected work
+    </a>
+  </div>
+</div>

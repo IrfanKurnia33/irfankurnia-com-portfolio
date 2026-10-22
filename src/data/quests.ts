@@ -12,10 +12,12 @@ export interface Quest {
 export const quests: Quest[] = [
   {
     id: '01',
-    title: 'Quest placeholder 01',
-    aspect: 'tall',
+    title: 'Location Intelligence Dashboard',
+    aspect: 'wide',
     description:
-      'A space for an experiment in progress. Add the finished image or animation and a few words about what you explored.',
+      'A intelligence feature to visualize and analyze spatial data for business location planning.',
+    type: 'image',
+    media: '/quests/location-intelligence.webp',
   },
   {
     id: '02',

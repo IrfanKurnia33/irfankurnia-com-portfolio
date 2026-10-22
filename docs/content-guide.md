@@ -14,9 +14,14 @@ Keep `updated` in `YYYY-MM-DD` format. Change it when the site’s content chang
 
 ## Add or edit a project
 
-Each file in `src/content/projects/` creates a Work card and a `/work/<filename>/` page. For example, `finodus.md` becomes `/work/finodus/`.
+Each case study has two Markdown files with the same filename:
 
-Copy an existing file, choose a descriptive filename, and edit its frontmatter:
+- `src/content/projects/finodus.md`: the **full case study** and shared project metadata, at `/work/finodus/`.
+- `src/content/projects/tldr/finodus.md`: the **TL;DR version**, at `/work/finodus/tldr/`.
+
+The pair creates one Work card. The toggle below the featured image switches between the two articles and their tables of contents. Full Case Study is the default when visitors open a Work card. Each version has a direct URL that survives reloading and supports browser Back/Forward; the links also work without JavaScript.
+
+To add a project, copy both files and give them the same descriptive filename. Edit the frontmatter in the **full version only**:
 
 ```yaml
 ---
@@ -35,7 +40,27 @@ placeholder: false
 
 `cover` is optional. Put that file in `public/projects/example/cover.png`; its URL omits the `public` prefix. Use transparent PNGs when the artwork needs transparency. Supply a compressed image at roughly twice its intended display width. A missing `cover` shows an explicitly labelled image placeholder.
 
-The Markdown body is the case-study article. Every `## Heading` automatically appears in its table of contents. Use sections that fit the actual story; the template’s eight headings are a writing framework rather than a required process.
+To show project buttons below the tags, add an optional `links` list to the full file's frontmatter. Choose one or two entries, in the order you want them displayed:
+
+```yaml
+links:
+  - type: figma
+    url: https://www.figma.com/design/your-file
+  - type: repository
+    url: https://github.com/your-name/your-project
+```
+
+| Type         | Button label       |
+| ------------ | ------------------ |
+| `figma`      | See Figma File     |
+| `repository` | View Repository    |
+| `prototype`  | See Live Prototype |
+
+Each type uses its supplied icon automatically. Use an `https://` or `http://` URL; all buttons open in a new tab. Omit `links` until you have destinations ready. Both Full and TL;DR versions share these buttons.
+
+Each Markdown body is its own article. The TL;DR file needs no frontmatter: the title, summary, tags, role, timeline, date, tools, cover, links, and draft status all come from the full version. Write a shorter account of the problem, your contribution, and the outcome there, keeping unverified results clearly marked. The supplied TL;DR copy is a draft for you to revise alongside the full narrative.
+
+Every `## Heading` automatically appears in that version’s table of contents. Use sections that fit the actual story; the full template’s eight headings and the short template’s three headings are writing frameworks rather than a required process.
 
 ```md
 ## A decision that mattered
@@ -50,9 +75,28 @@ Explain the decision and the evidence behind it.
 </figure>
 ```
 
+Cover images and article images automatically show a dark zoom overlay with the supplied zoom icon. Click or keyboard-activate an image to open a larger preview over a blurred background. Click outside the image, press Escape, or use the close button to dismiss it. Captions remain with their figures. This applies to both Full and TL;DR versions, including after switching between them; no extra Markdown attributes are needed. Images remain visible without JavaScript.
+
 For a verified metric, HTML in Markdown can use `<p class="metric">…</p>` followed by the measurement’s context and source. Do not turn draft numbers into achievements without evidence.
 
-Setting `placeholder: false` removes the draft banner. Remove the three numbered sample project files when your real case studies replace them. Run `npm run check` to catch missing or invalid metadata.
+Setting `placeholder: false` removes the draft banner in both versions. When removing a sample project, remove both of its Markdown files. Run `npm run check` to catch missing or invalid metadata, and `npm run build` to check that every full article has a matching TL;DR file and that there are no orphaned TL;DR files.
+
+Standard Markdown and HTML tables automatically use the shared case-study styling: content-sized columns, a soft green header, subtle alternating rows, and comfortable padding. Wide tables scroll horizontally inside their own keyboard-focusable frame on small screens. This also works after switching Full/TL;DR versions; no custom classes are needed. Markdown column alignment is preserved.
+
+Use fenced `mermaid` blocks for flowcharts in any Full or TL;DR article. See [Mermaid's flowchart syntax](https://mermaid.js.org/syntax/flowchart.html) for labels, connections, and other shapes:
+
+```mermaid
+flowchart LR
+  accTitle: Review workflow
+  accDescr: Documents are reviewed, open questions are assigned, and the record is handed off.
+  A[Documents] --> B[Review terms] --> C[Open items] --> D[Handoff]
+```
+
+Flowcharts automatically use left-to-right layout above 700px and top-down layout on smaller screens, including when resizing or switching versions. The boxes share the featured image placeholder's gradient, 17px radius, border, and layered shadows, with local Hanken Grotesk labels and Sora for bold headings. Wide desktop flows scroll inside the article; mobile diagrams fit their available width. Add `accTitle` and `accDescr` for a meaningful accessible title and explanation. The original code remains readable if JavaScript is disabled or a diagram cannot render. Mermaid loads only when the selected article contains a diagram.
+
+External web links in both Full and TL;DR case studies automatically open in a new tab. Continue writing normal Markdown links; internal links and section anchors stay in the same tab.
+
+Each case study also has a fixed **Back to Top** button in place of the motion control. It scrolls smoothly to the beginning of the page and respects reduced-motion preferences.
 
 ## Update Now
 

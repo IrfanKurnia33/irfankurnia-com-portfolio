@@ -1,0 +1,130 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import CaseToggle from '../../components/CaseToggle.astro';
+import CaseStudyBody from '../../components/CaseStudyBody.astro';
+import ImageDialog from '../../components/ImageDialog.astro';
+export async function getStaticPaths() {
+  const [projects, summaries] = await Promise.all([
+    getCollection('projects'),
+    getCollection('projectSummaries'),
+  ]);
+  const summariesById = new Map(summaries.map((summary) => [summary.id, summary]));
+  for (const summary of summaries) {
+    if (!projects.some((project) => project.id === summary.id)) {
+      throw new Error(
+        `TL;DR "${summary.id}" needs a matching src/content/projects/${summary.id}.md.`,
+      );
+    }
+  }
+  return projects.flatMap((project) => {
+    const summary = summariesById.get(project.id);
+    if (!summary) {
+      throw new Error(`Add the short version at src/content/projects/tldr/${project.id}.md.`);
+    }
+    return (['full', 'tldr'] as const).map((mode) => ({
+      params: { slug: mode === 'full' ? project.id : `${project.id}/tldr` },
+      props: { project, summary, mode },
+    }));
+  });
+}
+interface Props {
+  project: CollectionEntry<'projects'>;
+  summary: CollectionEntry<'projectSummaries'>;
+  mode: 'full' | 'tldr';
+}
+const { project, summary, mode } = Astro.props;
+const pageTitle = `${project.data.title}${mode === 'tldr' ? ' — TL;DR' : ''} — Irfan Kurnia`;
+const alternateMode = mode === 'full' ? 'tldr' : 'full';
+const projectLinkTypes = {
+  figma: { label: 'See Figma File', icon: 'figma' },
+  repository: { label: 'View Repository', icon: 'github' },
+  prototype: { label: 'See Live Prototype', icon: 'live-link' },
+};
+---
+
+<Base page="work" title={pageTitle} description={project.data.summary}>
+  <article class="case-study container" data-case-study>
+    <a class="back-link" href="/#work">
+      <Icon name="back" />
+      Back to Work
+    </a>
+    <header class="case-header">
+      <div>
+        <h1>{project.data.title}</h1>
+        <p class="case-summary">{project.data.summary}</p>
+        <ul class="tags" aria-label="Project categories">
+          {project.data.tags.map((tag) => (
+            <li>{tag}</li>
+          ))}
+        </ul>
+        {project.data.links && (
+          <div class="case-actions">
+            {project.data.links.map(({ type, url }) => (
+              <a class="primary-button" href={url} target="_blank" rel="noopener noreferrer">
+                <Icon name={projectLinkTypes[type].icon} size={20} />
+                <span>{projectLinkTypes[type].label}</span>
+                <span class="sr-only"> (opens in a new tab)</span>
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+      <dl class="project-meta">
+        <div>
+          <dt>Role</dt>
+          <dd>{project.data.role}</dd>
+        </div>
+        <div>
+          <dt>Timeline</dt>
+          <dd>{project.data.timeline}</dd>
+        </div>
+        <div>
+          <dt>Date</dt>
+          <dd>{project.data.date}</dd>
+        </div>
+        <div>
+          <dt>Tools</dt>
+          <dd>{project.data.tools.join(', ')}</dd>
+        </div>
+      </dl>
+    </header>
+    <div class="case-featured">
+      {project.data.cover ? (
+        <img
+          src={project.data.cover}
+          alt={`${project.data.title} — project overview`}
+          width="1200"
+          height="640"
+        />
+      ) : (
+        <>
+          <span class="eyebrow">Featured image placeholder</span>
+          <span>
+            Room for the
+            <br />
+            <strong>whole picture.</strong>
+          </span>
+          <p>Add a project image or a transparent PNG.</p>
+        </>
+      )}
+    </div>
+    <CaseToggle slug={project.id} title={project.data.title} mode={mode} />
+    <p class="sr-only" role="status" data-case-status></p>
+    {project.data.placeholder && (
+      <aside class="draft-banner">
+        <Icon name="in-progress" />
+        <p>
+          <strong>A work in progress.</strong> This page demonstrates the case-study layout.
+          Unfinished content and unverified outcomes are marked below.
+        </p>
+      </aside>
+    )}
+    <CaseStudyBody content={mode === 'full' ? project : summary} mode={mode} />
+    <template data-case-alternate>
+      <CaseStudyBody content={alternateMode === 'full' ? project : summary} mode={alternateMode} />
+    </template>
+    <ImageDialog />
+  </article>
+</Base>

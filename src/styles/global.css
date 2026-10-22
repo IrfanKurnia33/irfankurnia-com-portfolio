@@ -29,6 +29,9 @@
   --font-numeric: 'Space Mono', monospace;
   --font-handwritten: 'Gloria Hallelujah', cursive;
   --card-shadow: 0 10px 24px #1d1d1d18, 0 2px 5px #1d1d1d08;
+  --featured-radius: 17px;
+  --featured-surface-end: #e7eae4;
+  --card-drop-shadow: drop-shadow(0 10px 12px #1d1d1d18) drop-shadow(0 2px 2.5px #1d1d1d08);
   color-scheme: light;
   font-family: var(--font-body);
   color: var(--text-body);
@@ -285,7 +288,8 @@ html[data-page='home'][data-section='hero'] .space-background {
 }
 html:not([data-enhanced]) .stack-controls,
 html:not([data-enhanced]) .mobile-menu-toggle,
-html:not([data-enhanced]) .motion-toggle {
+html:not([data-enhanced]) .motion-toggle,
+html:not([data-enhanced]) .back-to-top {
   display: none;
 }
 .dock {
@@ -378,7 +382,8 @@ html:not([data-enhanced]) .motion-toggle {
 .dock-link.active .active-icon {
   display: block;
 }
-.motion-toggle {
+.motion-toggle,
+.back-to-top {
   position: fixed;
   right: 14px;
   bottom: 10px;
@@ -394,11 +399,24 @@ html:not([data-enhanced]) .motion-toggle {
   font-size: 12px;
 }
 .motion-toggle-symbol {
-  font-size: 12px;
-  width: 12px;
+  width: 14px;
+  height: 14px;
 }
-.motion-toggle:hover {
+.control-play-icon,
+button[aria-pressed='true'] > .control-pause-icon {
+  display: none;
+}
+button[aria-pressed='true'] > .control-play-icon {
+  display: block;
+}
+.motion-toggle:hover,
+.back-to-top:hover {
   background: var(--color-accent-soft-3);
+}
+.back-to-top {
+  min-height: 44px;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  color: var(--color-accent-deep-2);
 }
 
 /* Hero and the reusable five/four-card stacks. */
@@ -811,7 +829,7 @@ a.social-link:hover {
   padding: 22px;
   border-radius: 8px;
   overflow: hidden;
-  background: var(--color-accent-soft-2);
+  background: var(--color-light-2);
   color: var(--color-accent-deep-2);
   display: flex;
   flex-direction: column;
@@ -917,10 +935,10 @@ a.social-link:hover {
 .quest-card {
   display: block;
   width: 100%;
-  padding: 14px;
+  padding: 0px;
   background: linear-gradient(135deg, var(--color-dark-2), var(--color-dark-1));
   border: 1.5px solid var(--color-light-2);
-  border-radius: 17px;
+  border-radius: 16px;
   box-shadow: 0 3px 10px #1d1d1d12;
   transition:
     transform 0.25s,
@@ -1007,6 +1025,38 @@ a.social-link:hover {
     background: #1d1d1d00;
     backdrop-filter: blur(0);
   }
+}
+.image-dialog[open] {
+  display: grid;
+  place-items: center;
+}
+.image-dialog {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100svh;
+  max-height: none;
+  margin: 0;
+  padding: 48px 24px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.image-dialog-image {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: calc(100svh - 96px);
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+}
+.image-dialog .dialog-close {
+  position: fixed;
+  top: 12px;
+  right: 16px;
 }
 .quest-dialog .modal-media {
   max-height: 55svh;
@@ -1165,6 +1215,9 @@ html:not([data-page='home']) .site-footer {
   transform: translateY(-3px);
   background: var(--color-accent-deep-2);
 }
+.primary-button .icon {
+  flex-shrink: 0;
+}
 
 /* Now and case-study reading layouts. */
 .now-page {
@@ -1290,6 +1343,135 @@ html:not([data-page='home']) .site-footer {
   border: 1px solid var(--color-light-3);
   padding: 10px;
 }
+/* Shared case-study tables: content-sized columns and contained mobile scrolling. */
+.case-prose {
+  min-width: 0;
+}
+.case-prose table {
+  width: 100%;
+  table-layout: auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--color-accent-soft-2);
+  border-radius: 14px;
+  background: var(--card-surface);
+  color: var(--text-body);
+  font: 400 15px/1.65 var(--font-body);
+}
+.case-table {
+  max-width: 100%;
+  margin-block: 28px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  border: 1px solid var(--color-accent-soft-2);
+  border-radius: 14px;
+  background: var(--card-surface);
+  box-shadow: 0 3px 12px #2b3b0e08;
+  scrollbar-color: var(--color-accent-soft-1) var(--color-light-1);
+}
+.case-table:focus-visible {
+  outline: 3px solid var(--focus-indicator);
+  outline-offset: 4px;
+}
+.case-table > table {
+  display: table;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+}
+.case-prose table :is(th, td) {
+  min-width: 10rem;
+  padding: 16px 20px;
+  border: 0;
+  text-align: start;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+  transition: background-color 0.15s ease;
+}
+.case-prose table thead th {
+  padding-block: 14px;
+  background: var(--panel-background);
+  color: var(--color-accent-deep-2);
+  border-bottom: 1px solid var(--color-accent-soft-2);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.case-prose table tbody > tr + tr > *,
+.case-prose table tfoot > tr > * {
+  border-top: 1px solid var(--color-light-2);
+}
+.case-prose table tbody > tr:nth-child(even) > * {
+  background: #e3f1c733;
+}
+.case-prose table tbody > tr > :first-child,
+.case-prose table tfoot > tr > * {
+  color: var(--color-accent-deep-2);
+  font-weight: 600;
+}
+.case-prose table tbody > tr:hover > *,
+.case-prose table tbody > tr:focus-within > * {
+  background: var(--panel-background);
+}
+.case-prose table [align='center'] {
+  text-align: center;
+}
+.case-prose table [align='right'] {
+  text-align: right;
+}
+.case-prose table caption {
+  padding: 14px 20px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  text-align: start;
+}
+/* Mermaid diagrams keep their labels readable and wide flows scroll within the article. */
+/* Mermaid measures temporary SVGs before insertion; even tiny CSS transitions distort those bounds. */
+svg[id^='case-flow-'],
+svg[id^='case-flow-'] * {
+  transition: none !important;
+  animation: none !important;
+}
+.case-diagram {
+  max-width: 100%;
+  margin-block: 28px;
+  padding: 12px 4px 32px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-color: var(--color-accent-soft-1) var(--page-background);
+}
+.case-diagram:focus-visible {
+  outline: 3px solid var(--focus-indicator);
+  outline-offset: 4px;
+  border-radius: var(--featured-radius);
+}
+.case-diagram-canvas > svg {
+  display: block;
+  max-width: none;
+  height: auto;
+  margin-inline: auto;
+  overflow: visible;
+}
+.case-diagram .node .label-container {
+  stroke: var(--color-light-2);
+  stroke-width: 1.5px;
+  filter: var(--card-drop-shadow);
+}
+.case-diagram pre {
+  max-width: 100%;
+  margin: 0;
+  padding: 20px;
+  border-radius: var(--featured-radius);
+  font: 13px/1.7 var(--font-numeric);
+}
+@media (max-width: 700px) {
+  .case-diagram {
+    padding-inline: 0;
+  }
+  .case-diagram-canvas > svg {
+    max-width: 100%;
+  }
+}
 .case-study {
   padding-top: 50px;
 }
@@ -1317,7 +1499,6 @@ html:not([data-page='home']) .site-footer {
 .case-header h1 {
   font-size: 46px;
   line-height: 1.2;
-  margin-top: 10px;
 }
 .case-summary {
   font-size: 23px;
@@ -1326,6 +1507,20 @@ html:not([data-page='home']) .site-footer {
 }
 .case-header .tags {
   margin-top: 25px;
+}
+.case-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+.case-actions .primary-button {
+  max-width: 100%;
+  min-height: 44px;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
 }
 .eyebrow {
   font: 11px/1.6 var(--font-numeric);
@@ -1350,11 +1545,75 @@ html:not([data-page='home']) .site-footer {
 .project-meta dd {
   margin: 0;
 }
+.case-toggle {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-height: 48px;
+  margin-top: 24px;
+  padding: 6px;
+  border: 1px solid var(--color-accent-soft-2);
+  border-radius: 24px;
+  background: linear-gradient(
+    180deg,
+    var(--color-light-1) 0,
+    var(--color-light-1) 33.5625px,
+    var(--color-light-2) 67.125px
+  );
+}
+.case-toggle::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 6px auto 6px 6px;
+  width: calc(50% - 6px);
+  border-radius: 17px;
+  background: var(--color-accent-deep-1);
+  pointer-events: none;
+  transition: transform 0.58s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.case-toggle[data-mode='tldr']::before {
+  transform: translateX(100%);
+}
+.case-toggle-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 34px;
+  padding: 6px 10px;
+  border-radius: 17px;
+  color: var(--color-dark-3);
+  font: 400 14px/22px var(--font-heading);
+  text-align: center;
+  text-decoration: none;
+  transition: color 0.25s;
+}
+.case-toggle-link .icon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+}
+.case-toggle-link[aria-current] {
+  color: var(--color-accent-soft-3);
+}
+.case-toggle-link:not([aria-current]):hover {
+  color: var(--color-dark-2);
+}
+.case-toggle-link .active-icon,
+.case-toggle-link[aria-current] .inactive-icon {
+  display: none;
+}
+.case-toggle-link[aria-current] .active-icon {
+  display: block;
+}
 .case-featured {
   min-height: 400px;
   padding: 40px;
   border: 1.5px solid var(--color-light-2);
-  border-radius: 17px;
+  border-radius: var(--featured-radius);
   box-shadow: var(--card-shadow);
   display: flex;
   flex-direction: column;
@@ -1362,7 +1621,7 @@ html:not([data-page='home']) .site-footer {
   justify-content: center;
   gap: 22px;
   text-align: center;
-  background: linear-gradient(135deg, var(--color-light-1), #e7eae4);
+  background: linear-gradient(135deg, var(--color-light-1), var(--featured-surface-end));
 }
 .case-featured > span:not(.eyebrow) {
   font: 400 52px/1.2 var(--font-heading);
@@ -1374,10 +1633,73 @@ html:not([data-page='home']) .site-footer {
 .case-featured > p {
   font-size: 14px;
 }
-.case-featured > img {
+.case-featured > img,
+.case-featured .image-zoom-trigger > img {
   max-height: 650px;
   width: 100%;
+  height: auto;
   object-fit: contain;
+}
+.image-zoom-trigger {
+  position: relative;
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  overflow: hidden;
+  cursor: zoom-in;
+  line-height: 0;
+}
+.case-featured .image-zoom-trigger {
+  width: 100%;
+}
+.case-prose .image-zoom-trigger {
+  margin-block: 24px;
+}
+.case-prose .image-zoom-trigger img {
+  margin: 0;
+}
+.image-zoom-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  background: #1d1d1db3;
+  color: var(--color-light-1);
+  font: 600 14px/1.4 var(--font-body);
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+.image-zoom-overlay .icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 0;
+  filter: brightness(0) invert(1);
+}
+.image-zoom-trigger:hover .image-zoom-overlay,
+.image-zoom-trigger:focus-visible .image-zoom-overlay {
+  opacity: 1;
+}
+@media (hover: none) {
+  .image-zoom-overlay {
+    inset: auto 0 0;
+    flex-direction: row;
+    padding: 24px 12px 12px;
+    background: linear-gradient(transparent, #1d1d1de6 35%);
+    font-size: 12px;
+    opacity: 1;
+  }
 }
 .draft-banner {
   display: flex;
@@ -1391,14 +1713,14 @@ html:not([data-page='home']) .site-footer {
   font-size: 15px;
   line-height: 1.6;
 }
-.draft-banner > span {
-  font-size: 30px;
-}
 .case-body {
   display: grid;
   grid-template-columns: 220px minmax(0, 1fr);
   gap: 60px;
   margin-top: 70px;
+}
+.case-body-no-toc {
+  grid-template-columns: minmax(0, 1fr);
 }
 .toc {
   position: sticky;
@@ -1574,6 +1896,10 @@ html[data-motion='paused'] .stack-card,
 html[data-motion='paused'] .dock-indicator,
 html[data-motion='paused'] .dock-label,
 html[data-motion='paused'] .dock-link,
+html[data-motion='paused'] .case-toggle::before,
+html[data-motion='paused'] .case-toggle-link,
+html[data-motion='paused'] .image-zoom-overlay,
+html[data-motion='paused'] .case-prose table :is(th, td),
 html[data-motion='paused'] .menu-icon,
 html[data-motion='paused'] .menu-line,
 html[data-motion='paused'] .mobile-navigation {
@@ -2188,6 +2514,11 @@ html[data-motion='paused'] .will-reveal {
   }
 }
 @media (max-width: 370px) {
+  .case-toggle-link {
+    gap: 6px;
+    padding-inline: 4px;
+    font-size: 12px;
+  }
   .container,
   .header-inner {
     width: calc(100% - 36px);

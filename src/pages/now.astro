@@ -3,6 +3,7 @@ import { getEntry, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import CardStack from '../components/CardStack.astro';
 import ContactCards from '../components/ContactCards.astro';
+import Icon from '../components/Icon.astro';
 import { site, formatDate } from '../data/site';
 const entry = await getEntry('now', 'update');
 if (!entry) throw new Error('Now content is missing.');
@@ -30,7 +31,7 @@ const { Content } = await render(entry);
       <div class="now-gallery">
         <CardStack variant="gallery" />
         <a class="primary-button" href={site.links.blog} target="_blank" rel="noopener noreferrer">
-          Check out my personal blog <span aria-hidden="true">→</span>
+          Check out my personal blog <Icon name="live-link" />
           <span class="sr-only"> (opens in a new tab)</span>
         </a>
       </div>
