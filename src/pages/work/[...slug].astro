@@ -49,7 +49,12 @@ const projectLinkTypes = {
 };
 ---
 
-<Base page="work" title={pageTitle} description={project.data.summary}>
+<Base
+  page="work"
+  title={pageTitle}
+  description={project.data.summary}
+  canonicalPath={`/work/${project.id}/${mode === 'full' ? 'full/' : ''}`}
+>
   <article class="case-study container" data-case-study>
     <a class="back-link" href="/#work">
       <Icon name="back" />

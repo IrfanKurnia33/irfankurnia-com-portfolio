@@ -4,13 +4,23 @@ Use `npm run dev` while editing. Astro refreshes the browser when a file changes
 
 ## Shared details and links
 
-Edit `src/data/site.ts` for your email, availability badge, testimonial, profile destinations, footer date, and preview setting.
+Edit `src/data/site.ts` for your email, availability badge, testimonial, profile destinations, and footer date.
+
+Public indexing and link following are intentionally enabled in `src/layouts/Base.astro`. The production domain comes from `astro.config.mjs`; the layout generates canonical URLs, Open Graph and Twitter metadata, and JSON-LD for the person, website, and current page. Use `public/og-image.jpg` for social previews, `public/favicon/` for icons, and `public/manifest.json` for Android home-screen settings.
 
 Resume points to the supplied Google Drive document. Instagram, TikTok, X, Threads, Medium, Substack, LinkedIn, and the personal blog are also populated in `site.links`. Update their quoted URLs there when a destination changes.
 
 For a local resume, put your PDF in `public/resume.pdf` and set `resume: '/resume.pdf'`. The current contact address is `hello@irfankurnia.com`.
 
 Keep `updated` in `YYYY-MM-DD` format. Change it when the site’s content changes; it is not an automatic deployment timestamp. The copyright year is generated at build time.
+
+## Google Analytics
+
+The shared layout installs the Google tag using `site.googleAnalyticsId` in `src/data/site.ts`, currently `G-6YM4RQM063`. Tracking runs only in production builds on `irfankurnia.com` and `www.irfankurnia.com`. The allowed hostname follows the production domain in `astro.config.mjs`. Development, localhost previews, and other hosts do not load Google Analytics.
+
+In Google Analytics, open **Admin → Data streams → your web stream → Enhanced measurement → Page views → Show advanced settings**. Keep **Page loads** and **Page changes based on browser history events** enabled so Full/TL;DR switches and browser Back/Forward count as page views. The site uses Google's automatic measurement without sending additional manual page views. See [Google's history tracking guidance](https://developers.google.com/analytics/devguides/collection/ga4/single-page-applications).
+
+After deploying, visit the live site and check **Reports → Realtime**, or connect [Google Tag Assistant](https://tagassistant.google.com/) to the live domain and confirm `G-6YM4RQM063` is detected. Local verification does not establish that events have arrived in the Google Analytics property.
 
 ## Add or edit a project
 
@@ -194,4 +204,4 @@ Clock one uses `Asia/Jakarta`; clock two uses the visitor’s browser timezone. 
 - [ ] Complete the Current Role + Transition update.
 - [ ] Review image alternative text, photo captions, and contact response-time copy.
 - [ ] Set the actual content update dates.
-- [ ] Before publishing, turn off `site.preview`, confirm the domain/social metadata, and repeat the build and browser checks.
+- [ ] Before publishing, confirm the domain/social metadata and repeat the build and browser checks. Public indexing and link following are already enabled intentionally.
