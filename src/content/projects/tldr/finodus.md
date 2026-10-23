@@ -35,9 +35,7 @@ flowchart LR
 
 **5 hours/month recovered per team.** Illustrative assumptions: 100 exceptions × (8 − 5 minutes) ÷ 60. A **37.5% handling-time reduction**, unmeasured; capacity, not cash savings.
 
-## Learning & Built
-
-Matching, timing, and sign-off need separate states. Recovery needs the same care as success.
+**Learning** Matching, timing, and sign-off need separate states. Recovery needs the same care as success.
 
 **Built:** React/TypeScript, browser-local state, enforced decision gates, and a replayable product tour.
 

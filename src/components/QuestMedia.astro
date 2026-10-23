@@ -10,9 +10,8 @@ const { quest, modal = false } = Astro.props;
 <div
   class:list={[
     'quest-media',
-    `quest-${quest.aspect}`,
     `quest-art-${quest.id}`,
-    { 'modal-media': modal },
+    { 'modal-media': modal, 'has-media': Boolean(quest.media) },
   ]}
 >
   {quest.media ? (
@@ -23,12 +22,12 @@ const { quest, modal = false } = Astro.props;
         muted
         loop
         playsinline
-        preload="none"
+        preload="metadata"
         controls={modal}
         aria-label={quest.title}
       ></video>
     ) : (
-      <img src={quest.media} alt={quest.title} loading="lazy" width="800" height="800" />
+      <img src={quest.media} alt={quest.title} loading="lazy" />
     )
   ) : (
     <div class="quest-placeholder">

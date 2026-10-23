@@ -1,6 +1,7 @@
 // Small, independent enhancements. All page copy is rendered by Astro.
 import { initCaseStudy } from './case-study';
 import { initDialog } from './dialog';
+import { initQuestTilt } from './quest-tilt';
 
 const root = document.documentElement;
 root.dataset.enhanced = 'true';
@@ -358,6 +359,7 @@ if (document.querySelector('[data-clock]')) {
 }
 
 // Quest cards and case-study images share modal motion and dismissal behavior.
+initQuestTilt(motionPaused);
 document.querySelectorAll<HTMLButtonElement>('[data-quest-open]').forEach((button) => {
   const dialog = document.getElementById(button.dataset.questOpen!) as HTMLDialogElement;
   const modal = initDialog(dialog, motionPaused);

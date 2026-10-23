@@ -148,7 +148,6 @@ Edit `src/data/quests.ts`. Each item opens a modal with its media and descriptio
   id: '01',
   title: 'Your experiment’s title',
   description: 'What you explored and learned.',
-  aspect: 'tall', // 'tall', 'square', or 'wide'
   type: 'image',
   media: '/quests/your-image.webp',
 }
@@ -156,7 +155,11 @@ Edit `src/data/quests.ts`. Each item opens a modal with its media and descriptio
 
 Put the file in `public/quests/your-image.webp`. For animation, use `type: 'video'` with a muted MP4 or WebM and a `poster` image URL. Videos loop when visible and permitted by motion preferences; the modal also exposes playback controls. Prefer video with a poster to animated GIFs so visitors can pause motion.
 
-The first three entries form the left desktop column and the remaining entries form the right. Mobile reads the first column followed by the second, matching the source and keyboard order. Cards preserve this reading order rather than using CSS columns that jump between columns.
+Cards fill their available width and automatically follow the original image or video proportions, without cropping or a configured aspect ratio. Videos preload metadata so their dimensions are available even when motion is paused. Pop-ups preserve those proportions and scale media to the available width and viewport height. Empty placeholders use a minimum height until you add media.
+
+Entries split evenly between the two desktop columns; an odd extra entry goes in the left column. Four quests produce two cards in each column. Mobile reads the first column followed by the second, matching the source and keyboard order.
+
+With a mouse or pen, each card tilts toward the pointer in 3D and springs smoothly back to level on exit. Opening a pop-up resets its tilt. Touch, reduced motion, and the global pause preference keep the cards level. Media continues to use its original proportions.
 
 ## Appearance and motion
 

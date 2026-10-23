@@ -2,7 +2,6 @@ export interface Quest {
   id: string;
   title: string;
   description: string;
-  aspect: 'tall' | 'square' | 'wide';
   media?: string;
   type?: 'image' | 'video';
   poster?: string;
@@ -13,7 +12,6 @@ export const quests: Quest[] = [
   {
     id: '01',
     title: 'Location Intelligence Dashboard',
-    aspect: 'wide',
     description:
       'A intelligence feature to visualize and analyze spatial data for business location planning.',
     type: 'image',
@@ -21,36 +19,25 @@ export const quests: Quest[] = [
   },
   {
     id: '02',
-    title: 'Quest placeholder 02',
-    aspect: 'square',
+    title: 'Hero Section',
     description:
-      'Your next exploration goes here. Replace this placeholder with a short description and your own media.',
+      'Using LottieLab to animate the hero section for my portfolio website (what you saw earlier).',
+    type: 'video',
+    media: '/quests/hero-section.mp4',
   },
   {
     id: '03',
-    title: 'Quest placeholder 03',
-    aspect: 'wide',
-    description: 'A space for a small idea, prototype, or animation. This is placeholder content.',
+    title: 'Asset Management Mobile App',
+    description: 'Mobile app for UNHWIs to manage their assets and investments.',
+    type: 'video',
+    media: '/quests/fintivio-mobile-app.mp4',
   },
   {
     id: '04',
-    title: 'Quest placeholder 04',
-    aspect: 'square',
+    title: 'Teaching aspiring designers',
     description:
-      'Document what you tried, what surprised you, and what you would explore next. This is placeholder content.',
-  },
-  {
-    id: '05',
-    title: 'Quest placeholder 05',
-    aspect: 'tall',
-    description:
-      'Add an image or a muted looping video of your experiment. This is placeholder content.',
-  },
-  {
-    id: '06',
-    title: 'Quest placeholder 06',
-    aspect: 'wide',
-    description:
-      'An open frame for a future exploration. Replace this text when your work is ready.',
+      'Teaching aspiring designers and career switchers to get into the digital product field (Hacktiv8).',
+    type: 'image',
+    media: '/quests/online-class.webp',
   },
 ];

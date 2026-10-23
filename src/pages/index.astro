@@ -8,6 +8,8 @@ import Icon from '../components/Icon.astro';
 import { quests } from '../data/quests';
 import { site } from '../data/site';
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const questMidpoint = Math.ceil(quests.length / 2);
+const questColumns = [quests.slice(0, questMidpoint), quests.slice(questMidpoint)];
 const headingLead = 'A designer and researcher for'.split(' ');
 const headingAccent = 'complex & regulated products'.split(' ');
 const logos = [
@@ -124,19 +126,20 @@ const logos = [
       Experiments and explorations
     </h2>
     <div class="quests-grid">
-      {[quests.slice(0, 3), quests.slice(3)].map((column) => (
+      {questColumns.map((column) => (
         <div class="quest-column">
           {column.map((quest) => (
-            <button
-              type="button"
-              class="quest-card"
-              data-quest-open={`quest-${quest.id}`}
-              aria-label={`Open ${quest.title}`}
-              aria-haspopup="dialog"
-              data-reveal
-            >
-              <QuestMedia quest={quest} />
-            </button>
+            <div class="quest-item" data-reveal>
+              <button
+                type="button"
+                class="quest-card"
+                data-quest-open={`quest-${quest.id}`}
+                aria-label={`Open ${quest.title}`}
+                aria-haspopup="dialog"
+              >
+                <QuestMedia quest={quest} />
+              </button>
+            </div>
           ))}
         </div>
       ))}
