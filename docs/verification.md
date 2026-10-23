@@ -2,6 +2,10 @@
 
 ## Automated checks
 
+- Google Analytics: Astro check/build passed. All nine generated pages contain one initializer for `G-6YM4RQM063`. Browser checks with the Google script stubbed verified one asynchronous tag load on `irfankurnia.com` and `www.irfankurnia.com`, no tag or initialization on localhost and a preview hostname, and no duplicate installation during Full/TL;DR navigation and Back. Google Analytics property settings and receipt of live events remain unverified; automatic history page views require Enhanced measurement as documented in the content guide.
+
+- Social metadata and indexing: Astro check/build passed. Production checks verified canonical and Open Graph URLs, Twitter tags, intentional `index, follow`, and parseable Person/WebSite/page JSON-LD on all nine generated pages. All nine linked image, favicon, and manifest assets returned successfully; Android icons matched their declared dimensions, and the deleted social-card files returned 404. Chrome parsed the manifest without errors. At 390 and 1440 CSS pixels, Full/TL;DR switching and Back/Forward kept canonical, social, and JSON-LD metadata synchronized without reloading or dropping query parameters.
+
 - Quest layout and tilt: build, Astro checks, and all ten focused desktop/mobile Quest checks passed. The four entries split 2–2, mobile and keyboard order follow the source, and the static layout also works without JavaScript. Pointer-driven 3D tilt, spring return, dialog resets and focus, touch input, pause, and reduced motion were checked. All four cards responded to a mouse during visual review; the section passed automated WCAG A/AA checks.
 
 - Project-card hover: the 16px lift and -2deg rotation transition smoothly in both directions, including during and after the reveal animation. Both current cards were checked at 390 and 1440 CSS pixels, including intermediate transition frames and reduced motion. Build and formatting checks passed.
@@ -60,6 +64,6 @@ The samples included the first-visit entrance. Neither sample made external runt
 
 Chrome mobile emulation and an Edge smoke check do not establish compatibility with real iOS Safari, Firefox, or assistive technologies. Automated accessibility checks were supplemented with keyboard, focus, and rendered contrast inspection; they do not constitute a full accessibility audit. Field performance and platform-specific social previews require a later deployed build.
 
-The portfolio intentionally contains draft project copy, three sample projects, six Quest media placeholders, and a marked Now update. See [the remaining content checklist](content-guide.md#remaining-content-checklist). Pages remain `noindex, nofollow` until `site.preview` is changed before publication.
+The portfolio intentionally contains draft project copy, three sample projects, six Quest media placeholders, and a marked Now update. See [the remaining content checklist](content-guide.md#remaining-content-checklist). Public indexing and link following are now intentionally enabled with `index, follow` as requested; the preview flag has been removed.
 
 The local build is complete. No hosting, DNS, deployment, or external account changes were made.
