@@ -2,9 +2,16 @@ import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
+const articleSettings = {
+  // Keys are the generated heading anchors, values are the shorter navigation labels.
+  toc: z.record(z.string(), z.string().min(1)).default({}),
+  readingTime: z.string().optional(),
+};
+
 const projects = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/projects' }),
   schema: z.object({
+    ...articleSettings,
     title: z.string(),
     summary: z.string(),
     tags: z.array(z.string()),
@@ -33,10 +40,10 @@ const now = defineCollection({
   schema: z.object({ updated: z.string() }),
 });
 
-// Share project metadata with the full article; these files contain only the short version.
+// Summaries share project metadata, with their own navigation and reading-time settings.
 const projectSummaries = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/projects/tldr' }),
-  schema: z.object({}),
+  schema: z.object(articleSettings),
 });
 
 export const collections = { projects, projectSummaries, now };

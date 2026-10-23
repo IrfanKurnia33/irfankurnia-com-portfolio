@@ -1,52 +1,59 @@
-## Overview
+---
+readingTime: 60 sec
+toc:
+  make-lease-changes-safe-to-act-on: Brief & glossary
+  from-document-to-dependable-handoff: What I built
+  the-value-to-test: Business impact
+---
 
-**A working product design concept for reviewing commercial lease amendments—with sources, open questions, and responsibility kept together.**
+## Make lease changes safe to act on
+
+**The brief:** help US commercial property lease teams verify changes before billing or handoff. Keep sources, dates, and missing evidence together.
+
+**My role:** solo product design, practitioner research, branding, and AI-assisted prototype implementation.
+
+<aside class="case-glossary" aria-label="Real estate glossary">
+  <p class="eyebrow">Real estate, decoded</p>
+  <dl>
+    <div><dt>Amendment</dt><dd>A change to an existing lease.</dd></div>
+    <div><dt>Abstraction</dt><dd>Contract text → structured terms.</dd></div>
+    <div><dt>Renewal option</dt><dd>A conditional right to extend.</dd></div>
+    <div><dt>Qualified handoff</dt><dd>Reviewed, with open questions visible.</dd></div>
+  </dl>
+</aside>
+
+## From document to dependable handoff
+
+Two practitioner sessions exposed unclear statuses, interrupted source access, and unstructured conditions. I built this workflow:
+
+<ol class="case-flow" aria-label="Review workflow">
+  <li><span>01</span><strong>Documents</strong><small>Check coverage</small></li>
+  <li><span>02</span><strong>Review</strong><small>Decide with sources</small></li>
+  <li><span>03</span><strong>Open items</strong><small>Assign next actions</small></li>
+  <li><span>04</span><strong>Handoff</strong><small>Retain the limits</small></li>
+</ol>
 
 <figure>
-  <img src="/projects/stratis/02-review-amendment.png" alt="Corrected November rent beside the amendment that changes it, in the Stratis desktop workspace." loading="lazy" />
+  <img src="/projects/stratis/02-review-amendment.png" alt="The amended rent and effective period sit beside their supporting source in Stratis." loading="lazy" />
+  <figcaption><strong>Verify the change.</strong> Keep the governing clause beside the decision.</figcaption>
 </figure>
-
-## The problem
-
-A lease amendment can change next month's rent, alter a renewal deadline, and leave other terms unchanged. Extracting a number is only part of the work. Someone must establish which document governs it, when it applies, and what evidence is still missing.
-
-I focused Stratis's broader AI real estate vision on that review task for **US owner/operator lease administration teams**. The first scenario ends in a qualified handoff: useful reviewed information with unresolved questions clearly retained.
-
-Yardi already offers extraction inside Voyager. I explored traceable review and handoff as a possible reason for another product to exist; that opportunity remains unvalidated. [Yardi's 2026 update](https://www.yardi.com/blog/commercial-product-update-2026-q1/).
-
-## My contribution
-
-I led product framing, practitioner research, workflow, interaction and visual design, original branding, and prototype direction, with AI assistance for documentation, implementation, and technical checks.
-
-## What informed the design
-
-I created a synthetic lease and amendment from public document patterns, then ran **two moderated browser sessions with practitioners from different US owner/operators**: a senior administrator and a junior analyst.
-
-Both accounts raised status, source-access, and conditional-rights concerns. They differed on navigation guidance and recipient clarity. Final task records and timing were unavailable for scoring.
-
-## What changed
-
-- **Clearer outcomes.** A saved decision stays distinct from verified evidence or finished follow-up.
-- **Structured conditions.** Known option terms survive while eligibility remains unverified.
-- **Sources beside decisions.** Related amendment clauses remain available, with a drawer on narrow screens.
-- **Readable handoff.** Evidence, effective period, owner, and next action travel together in HTML and structured JSON.
 
 <figure>
-  <img src="/projects/stratis/08-handoff-unknown-and-periods.png" alt="The handoff places an unknown operating expense cap with its owner and request, followed by current and future rent with explicit effective periods." loading="lazy" />
+  <img src="/projects/stratis/08-handoff-unknown-and-periods.png" alt="A missing expense cap retains its evidence request and owner, alongside dated rent terms in the handoff." loading="lazy" />
+  <figcaption><strong>Make uncertainty actionable.</strong> Missing evidence travels with an owner and next step.</figcaption>
 </figure>
 
-## What exists now
+## The value to test
 
-A working prototype connects **Documents → Review terms → Open items → Handoff**, with saved progress, date calculations, conditional rights, and versioned exports. Warm neutral surfaces and readable type support document review.
+<dl class="metric-grid" aria-label="Illustrative business projections">
+  <div class="metric-card"><dt><span class="metric-kind">Planning target</span>Less review effort</dt><dd>25<span>%</span></dd><dd class="metric-context">40 → 30 min per amendment.</dd></div>
+  <div class="metric-card"><dt><span class="metric-kind">Illustrative projection</span>Capacity returned</dt><dd>~17<span>h / mo</span></dd><dd class="metric-context">At 100 amendments per month.</dd></div>
+</dl>
 
-The build and seven model tests pass. Browser checks cover the synthetic flow and eight selected widths, 320–1920 pixels. Selected automated accessibility checks found no violations; conformance and user-performance improvement remain unestablished.
+<p class="case-footnote">Assumptions, not measured results: 10 min × 100 ÷ 60 ≈ 16.7 hours/month.</p>
 
-Suggestions are prepared, with no live AI extraction or external integrations. GitHub/Vercel configuration is ready; deployment is pending.
+**Delivered:** working React/TypeScript prototype; seven model tests pass. Screens use fictional data; extraction suggestions are prepared.
 
-## What remains to learn
+**Next:** validate quality and time with more reviewers. Business impact is unmeasured.
 
-I proceeded without another round because the practitioners were busy. Time savings, revised usability, extraction accuracy, and business impact remain unmeasured. Next, I would recruit additional preparers, approvers, and a recipient to test status meaning, handoff policy, source continuity, and review effort.
-
-The main lesson: a useful review tool needs to preserve both the decision and its limits. A finished review action can leave evidence unresolved, with a clear owner for the next step.
-
-**Explore:** [Example readable handoff](https://files.irfankurnia.com/stratis/example-qualified-handoff.html) · [PDF example](https://files.irfankurnia.com/stratis/example-qualified-handoff.pdf).
+**Lesson:** a saved decision can still need evidence.

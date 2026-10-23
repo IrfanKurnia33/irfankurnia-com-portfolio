@@ -7,11 +7,11 @@ test('authored flowcharts use the brand styling and responsive flow direction', 
 }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.goto('/work/stratis/');
+  await page.goto('/work/stratis/full/');
   const diagram = page.locator('.case-diagram').first();
   await expect(diagram).toHaveAttribute('data-direction', isMobile ? 'TD' : 'LR');
   await expect(diagram.locator('svg')).toHaveAttribute('role', 'img');
-  await expect(diagram.locator('svg')).toHaveAccessibleName(/flowchart/i);
+  await expect(diagram.locator('svg')).toHaveAccessibleName('Amendment review workflow');
   await expect(diagram.locator('pre')).toBeHidden();
   await expect(diagram.locator('.node')).toHaveCount(4);
   const centers = await diagram.locator('.node > rect').evaluateAll((nodes) =>
@@ -58,7 +58,7 @@ test('diagrams load on demand and survive resizing, version switches, and browse
 }) => {
   const requests: string[] = [];
   page.on('request', (request) => requests.push(request.url()));
-  await page.goto('/work/stratis/tldr/');
+  await page.goto('/work/stratis/');
   await expect(page.getByRole('link', { name: 'TL;DR Version', exact: true })).toHaveAttribute(
     'aria-current',
     'page',
@@ -87,7 +87,7 @@ test('diagrams load on demand and survive resizing, version switches, and browse
 test('shared rendering supports another case study and keeps malformed diagram source readable', async ({
   page,
 }) => {
-  await page.goto('/work/finodus/');
+  await page.goto('/work/finodus/full/');
   await page.locator('[data-case-alternate]').evaluate((template) => {
     const prose = (template as HTMLTemplateElement).content.querySelector('.case-prose')!;
     for (const text of [

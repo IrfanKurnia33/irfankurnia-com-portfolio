@@ -9,6 +9,11 @@ interface Props {
 const { content, mode } = Astro.props;
 const { Content, headings } = await render(content);
 const sections = headings.filter((heading) => heading.depth === 2);
+for (const anchor of Object.keys(content.data.toc)) {
+  if (!sections.some((heading) => heading.slug === anchor)) {
+    throw new Error(`Unknown TOC anchor "${anchor}" in ${content.id} (${mode}).`);
+  }
+}
 ---
 
 <div
@@ -25,7 +30,7 @@ const sections = headings.filter((heading) => heading.depth === 2);
           {sections.map((heading, i) => (
             <a href={`#${heading.slug}`} data-toc-link>
               <span>{String(i + 1).padStart(2, '0')}</span>
-              {heading.text}
+              {content.data.toc[heading.slug] ?? heading.text}
             </a>
           ))}
         </nav>
@@ -33,6 +38,12 @@ const sections = headings.filter((heading) => heading.depth === 2);
     </aside>
   )}
   <div class="case-prose prose">
+    {content.data.readingTime && (
+      <p class="case-reading-time">
+        <span class="eyebrow">{mode === 'tldr' ? 'The overview' : 'The full story'}</span>
+        <span>{content.data.readingTime} read</span>
+      </p>
+    )}
     <Content />
     <a class="back-link article-back" href="/#work">
       <Icon name="back" />

@@ -25,7 +25,7 @@ test('routes, assets, section navigation, and browser Back work', async ({ page,
   if (isMobile) await page.locator('.toc summary').click();
   await expect(
     page.getByRole('navigation', { name: 'Table of contents' }).getByRole('link'),
-  ).toHaveCount(8);
+  ).toHaveCount(3);
   await page.goBack();
   await expect(page).toHaveURL(/\/#work/);
   await page.goto('/now/');
@@ -185,7 +185,7 @@ test('mobile navigation and case-study TOC support keyboard dismissal and anchor
     .getByRole('link', { name: 'Now', exact: true })
     .click();
   await expect(page).toHaveURL(/\/now\//);
-  await page.goto('/work/finodus/');
+  await page.goto('/work/finodus/full/');
   await expect(page.locator('.toc details')).not.toHaveAttribute('open');
   await page.getByText('On this page', { exact: false }).click();
   await page

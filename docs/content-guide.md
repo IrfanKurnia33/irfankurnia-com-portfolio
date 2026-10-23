@@ -16,12 +16,12 @@ Keep `updated` in `YYYY-MM-DD` format. Change it when the site’s content chang
 
 Each case study has two Markdown files with the same filename:
 
-- `src/content/projects/finodus.md`: the **full case study** and shared project metadata, at `/work/finodus/`.
-- `src/content/projects/tldr/finodus.md`: the **TL;DR version**, at `/work/finodus/tldr/`.
+- `src/content/projects/finodus.md`: the **full case study** and shared project metadata, at `/work/finodus/full/`.
+- `src/content/projects/tldr/finodus.md`: the **TL;DR version**, at `/work/finodus/`.
 
-The pair creates one Work card. The toggle below the featured image switches between the two articles and their tables of contents. Full Case Study is the default when visitors open a Work card. Each version has a direct URL that survives reloading and supports browser Back/Forward; the links also work without JavaScript.
+The pair creates one Work card. TL;DR opens by default, including direct visits to the project's base URL. The toggle below the featured image switches between articles and their tables of contents. Each version has a direct URL that survives reloading and supports browser Back/Forward; links also work without JavaScript. Previous `/work/<slug>/tldr/` URLs still open the overview.
 
-To add a project, copy both files and give them the same descriptive filename. Edit the frontmatter in the **full version only**:
+To add a project, copy both files and give them the same descriptive filename. Edit shared project metadata in the **full version**:
 
 ```yaml
 ---
@@ -58,9 +58,21 @@ links:
 
 Each type uses its supplied icon automatically. Use an `https://` or `http://` URL; all buttons open in a new tab. Omit `links` until you have destinations ready. Both Full and TL;DR versions share these buttons.
 
-Each Markdown body is its own article. The TL;DR file needs no frontmatter: the title, summary, tags, role, timeline, date, tools, cover, links, and draft status all come from the full version. Write a shorter account of the problem, your contribution, and the outcome there, keeping unverified results clearly marked. The supplied TL;DR copy is a draft for you to revise alongside the full narrative.
+Each Markdown body is its own article. The TL;DR file inherits title, summary, tags, role, timeline, date, tools, cover, links, and draft status from the full version. It can have its own optional `readingTime` and `toc` frontmatter. Write a shorter account of the business requirement, your contribution, and the outcome, keeping unverified results clearly marked.
 
 Every `## Heading` automatically appears in that version’s table of contents. Use sections that fit the actual story; the full template’s eight headings and the short template’s three headings are writing frameworks rather than a required process.
+
+To use shorter TOC labels without changing article headings, add settings to **each version's own Markdown file**:
+
+```yaml
+---
+readingTime: 5 min
+toc:
+  a-decision-that-mattered: Design decisions
+---
+```
+
+Keys are the heading's generated anchor (the part after `#` when you follow its TOC link); values are the labels visitors see in navigation. Unlisted headings keep their original text. Incorrect keys fail the build so a renamed heading cannot silently lose its label. For a short overview, use `readingTime: 60 sec`. This is an editorial reading target, not an automatically measured duration.
 
 ```md
 ## A decision that mattered
@@ -77,7 +89,28 @@ Explain the decision and the evidence behind it.
 
 Cover images and article images automatically show a dark zoom overlay with the supplied zoom icon. Click or keyboard-activate an image to open a larger preview over a blurred background. Click outside the image, press Escape, or use the close button to dismiss it. Captions remain with their figures. This applies to both Full and TL;DR versions, including after switching between them; no extra Markdown attributes are needed. Images remain visible without JavaScript.
 
-For a verified metric, HTML in Markdown can use `<p class="metric">…</p>` followed by the measurement’s context and source. Do not turn draft numbers into achievements without evidence.
+Use shared metric cards for business numbers. State whether each number is measured, a target, or an illustrative projection, and give its source or assumptions immediately below:
+
+```html
+<dl class="metric-grid" aria-label="Illustrative business projections">
+  <div class="metric-card">
+    <dt><span class="metric-kind">Planning target</span>Less review effort</dt>
+    <dd>25<span>%</span></dd>
+    <dd class="metric-context">40 → 30 minutes per amendment.</dd>
+  </div>
+</dl>
+<p class="case-footnote">Illustrative assumptions, not observed results.</p>
+
+<aside class="case-note">
+  <p><strong>Important context.</strong> Explain a limitation or key decision here.</p>
+</aside>
+```
+
+Cards wrap automatically on small screens and use the site's green palette, Sora numbers, and rounded surfaces. Existing `<p class="metric">…</p>` blocks remain supported. Use `case-brief` on a definition list for requirements and role; `case-glossary` on an aside containing a definition list for short term explanations. The Stratis articles show examples, plus a lightweight `case-flow` ordered-list diagram that needs no JavaScript.
+
+Local public images, including raw HTML `<img>` tags, receive intrinsic dimensions at build time to prevent layout shifts during TOC navigation. Supply dimensions yourself for remote images. TOC clicks scroll smoothly, respecting reduced motion and the site's pause preference. They collapse the mobile TOC before scrolling and remain aligned through late image/diagram rendering until the reader provides navigation or scrolling input.
+
+For supporting PDFs, prefer a normal link. This keeps document downloads and PDF viewers off the initial reading path. Stratis's full case links its PDF example; the longer original research narrative is preserved locally in `docs/stratis-research-archive.md` for reference.
 
 Setting `placeholder: false` removes the draft banner in both versions. When removing a sample project, remove both of its Markdown files. Run `npm run check` to catch missing or invalid metadata, and `npm run build` to check that every full article has a matching TL;DR file and that there are no orphaned TL;DR files.
 

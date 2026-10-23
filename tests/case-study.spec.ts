@@ -7,7 +7,7 @@ test('case study switches Markdown and TOC in place, with keyboard and browser h
 }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.goto('/work/finodus/?source=review');
+  await page.goto('/work/finodus/full/?source=review');
   const timeOrigin = await page.evaluate(() => performance.timeOrigin);
   const toggle = page.getByRole('navigation', { name: 'Case study version' });
   const full = toggle.getByRole('link', { name: 'Full Case Study', exact: true });
@@ -20,7 +20,7 @@ test('case study switches Markdown and TOC in place, with keyboard and browser h
   const initialScroll = await page.evaluate(() => scrollY);
   await tldr.focus();
   await page.keyboard.press('Enter');
-  await expect(page).toHaveURL('/work/finodus/tldr/?source=review');
+  await expect(page).toHaveURL('/work/finodus/?source=review');
   await expect(tldr).toHaveAttribute('aria-current', 'page');
   await expect(full).not.toHaveAttribute('aria-current');
   await expect(tldr).toBeFocused();
@@ -42,7 +42,7 @@ test('case study switches Markdown and TOC in place, with keyboard and browser h
   await expect(page).toHaveURL(/#outcome-and-status$/);
   if (isMobile) await expect(page.locator('.toc details')).not.toHaveAttribute('open');
   await full.click();
-  await expect(page).toHaveURL('/work/finodus/?source=review');
+  await expect(page).toHaveURL('/work/finodus/full/?source=review');
   await expect(toc.locator('a')).toHaveCount(8);
   await expect(page.locator('.case-prose')).toContainText('Research and insights');
 
@@ -65,7 +65,7 @@ test('every case study has two static versions and one Work card', async ({ page
   await page.goto('/');
   await expect(page.locator('.project-card')).toHaveCount(4);
   for (const slug of ['finodus', 'stratis', 'project-3', 'project-4']) {
-    expect((await page.goto(`/work/${slug}/`))?.status()).toBe(200);
+    expect((await page.goto(`/work/${slug}/full/`))?.status()).toBe(200);
     const title = await page.getByRole('heading', { level: 1 }).textContent();
     const metadata = await page.locator('.project-meta').textContent();
     const summaryHeadings = await page
@@ -75,7 +75,7 @@ test('every case study has two static versions and one Work card', async ({ page
           (heading) => heading.textContent || '',
         ),
       );
-    expect((await page.goto(`/work/${slug}/tldr/`))?.status()).toBe(200);
+    expect((await page.goto(`/work/${slug}/`))?.status()).toBe(200);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(title!);
     await expect(page.locator('.project-meta')).toHaveText(metadata!);
     await expect(page.locator('.case-prose h2')).toHaveText(summaryHeadings);
@@ -90,7 +90,7 @@ test('every case study has two static versions and one Work card', async ({ page
       }),
     ).toBe(true);
   }
-  expect((await page.goto('/work/finodus/not-a-version/'))?.status()).toBe(404);
+  expect((await page.goto('/work/finodus/full/not-a-version/'))?.status()).toBe(404);
 });
 
 test('version links and Markdown work without JavaScript', async ({
@@ -105,14 +105,14 @@ test('version links and Markdown work without JavaScript', async ({
   });
   try {
     const page = await context.newPage();
-    await page.goto('/work/finodus/');
+    await page.goto('/work/finodus/full/');
     await page.getByRole('link', { name: 'TL;DR Version', exact: true }).click();
-    await expect(page).toHaveURL('/work/finodus/tldr/');
+    await expect(page).toHaveURL('/work/finodus/');
     await expect(page.locator('.case-prose h2')).toHaveCount(3);
     await page.getByRole('link', { name: /My contribution/ }).click();
     await expect(page.locator('#my-contribution')).toBeInViewport();
     await page.getByRole('link', { name: 'Full Case Study', exact: true }).click();
-    await expect(page).toHaveURL('/work/finodus/');
+    await expect(page).toHaveURL('/work/finodus/full/');
     await expect(page.locator('.case-prose h2')).toHaveCount(8);
   } finally {
     await context.close();
@@ -122,7 +122,7 @@ test('version links and Markdown work without JavaScript', async ({
 test('case toggle matches reference geometry, fits small screens, and passes automated accessibility checks', async ({
   page,
 }) => {
-  for (const path of ['/work/finodus/', '/work/finodus/tldr/']) {
+  for (const path of ['/work/finodus/full/', '/work/finodus/']) {
     await page.goto(path);
     await page.evaluate(() => document.fonts.ready);
     for (const width of [320, 402, 768, 1440]) {

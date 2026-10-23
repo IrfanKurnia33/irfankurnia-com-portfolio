@@ -5,6 +5,7 @@ import Icon from '../../components/Icon.astro';
 import CaseToggle from '../../components/CaseToggle.astro';
 import CaseStudyBody from '../../components/CaseStudyBody.astro';
 import ImageDialog from '../../components/ImageDialog.astro';
+import { publicImageDimensions } from '../../lib/case-image-dimensions.mjs';
 export async function getStaticPaths() {
   const [projects, summaries] = await Promise.all([
     getCollection('projects'),
@@ -23,9 +24,12 @@ export async function getStaticPaths() {
     if (!summary) {
       throw new Error(`Add the short version at src/content/projects/tldr/${project.id}.md.`);
     }
-    return (['full', 'tldr'] as const).map((mode) => ({
-      params: { slug: mode === 'full' ? project.id : `${project.id}/tldr` },
-      props: { project, summary, mode },
+    // Keep existing /tldr/ links valid; the base URL now opens the overview.
+    return (['tldr', 'full', 'legacy-tldr'] as const).map((route) => ({
+      params: {
+        slug: route === 'tldr' ? project.id : `${project.id}/${route === 'full' ? 'full' : 'tldr'}`,
+      },
+      props: { project, summary, mode: route === 'full' ? 'full' : 'tldr' },
     }));
   });
 }
@@ -35,6 +39,7 @@ interface Props {
   mode: 'full' | 'tldr';
 }
 const { project, summary, mode } = Astro.props;
+const coverSize = await publicImageDimensions(project.data.cover);
 const pageTitle = `${project.data.title}${mode === 'tldr' ? ' — TL;DR' : ''} — Irfan Kurnia`;
 const alternateMode = mode === 'full' ? 'tldr' : 'full';
 const projectLinkTypes = {
@@ -95,8 +100,8 @@ const projectLinkTypes = {
         <img
           src={project.data.cover}
           alt={`${project.data.title} — project overview`}
-          width="1200"
-          height="640"
+          width={coverSize?.width ?? 1200}
+          height={coverSize?.height ?? 640}
         />
       ) : (
         <>

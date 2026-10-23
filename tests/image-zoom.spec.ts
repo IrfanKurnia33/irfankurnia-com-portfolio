@@ -4,7 +4,7 @@ import AxeBuilder from '@axe-core/playwright';
 test('case-study images show the zoom hint and open an accessible, fitted preview', async ({
   page,
 }) => {
-  await page.goto('/work/stratis/');
+  await page.goto('/work/stratis/full/');
   const figure = page.locator('.case-prose figure').first();
   const trigger = figure.getByRole('button', { name: /^Zoom image:/ });
   const source = trigger.locator('img:not(.icon)');
@@ -62,7 +62,7 @@ test('case-study images show the zoom hint and open an accessible, fitted previe
 test('zoom follows Full and TL;DR switches without duplicates and preserves pictures', async ({
   page,
 }) => {
-  await page.goto('/work/stratis/');
+  await page.goto('/work/stratis/full/');
   const fullImageCount = await page.locator('.image-zoom-trigger').count();
   const coverImageCount = await page.locator('.case-featured .image-zoom-trigger').count();
   // Model an image in the alternate Markdown without changing the authored copy.
@@ -103,7 +103,7 @@ test('zoom follows Full and TL;DR switches without duplicates and preserves pict
     await expect(page.locator('.image-zoom-trigger')).toHaveCount(fullImageCount);
     await expect(page.locator('.image-zoom-trigger .image-zoom-trigger')).toHaveCount(0);
   }
-  await page.goto('/work/stratis/tldr/');
+  await page.goto('/work/stratis/');
   await page.locator('.case-featured .image-zoom-trigger').click();
   await expect(page.getByRole('dialog', { name: 'Image preview' })).toBeVisible();
 });
@@ -112,7 +112,7 @@ test('image previews animate out, keep focus during exit, and follow reduced mot
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.goto('/work/stratis/');
+  await page.goto('/work/stratis/full/');
   const trigger = page.locator('.case-featured .image-zoom-trigger');
   await trigger.click();
   const dialog = page.getByRole('dialog', { name: 'Image preview' });
