@@ -16,7 +16,7 @@ Keep `updated` in `YYYY-MM-DD` format. Change it when the site’s content chang
 
 ## Google Analytics
 
-The shared layout installs the Google tag using `site.googleAnalyticsId` in `src/data/site.ts`, currently `G-6YM4RQM063`. Tracking runs only in production builds on `irfankurnia.com` and `www.irfankurnia.com`. The allowed hostname follows the production domain in `astro.config.mjs`. Development, localhost previews, and other hosts do not load Google Analytics.
+The shared layout installs the Google tag using `site.googleAnalyticsId` in `src/data/site.ts`, currently `G-6YM4RQM063`. Tracking runs only in production builds on `irfankurnia.com` and `www.irfankurnia.com`. Measurement commands queue immediately; the Google library loads at an idle opportunity after the page's load event, with a two-second idle timeout, so it does not compete with critical resources. The allowed hostname follows the production domain in `astro.config.mjs`. Development, localhost previews, and other hosts do not load Google Analytics.
 
 In Google Analytics, open **Admin → Data streams → your web stream → Enhanced measurement → Page views → Show advanced settings**. Keep **Page loads** and **Page changes based on browser history events** enabled so Full/TL;DR switches and browser Back/Forward count as page views. The site uses Google's automatic measurement without sending additional manual page views. See [Google's history tracking guidance](https://developers.google.com/analytics/devguides/collection/ga4/single-page-applications).
 
@@ -163,9 +163,9 @@ Edit `src/data/quests.ts`. Each item opens a modal with its media and descriptio
 }
 ```
 
-Put the file in `public/quests/your-image.webp`. For animation, use `type: 'video'` with a muted MP4 or WebM and a `poster` image URL. Videos loop when visible and permitted by motion preferences; the modal also exposes playback controls. Prefer video with a poster to animated GIFs so visitors can pause motion.
+Put the file in `public/quests/your-image.webp`. Local PNG, JPEG, and WebP Quest images and project covers are imported through `src/lib/public-images.ts` to generate responsive WebP copies; the original URLs remain available. Other formats and remote URLs retain their normal image behavior. For animation, use `type: 'video'` with a muted MP4 or WebM and a `poster` image URL. Use a poster with the video's original aspect ratio. Videos loop when visible and permitted by motion preferences; the modal also exposes playback controls. Prefer video with a poster to animated GIFs so visitors can pause motion.
 
-Cards fill their available width and automatically follow the original image or video proportions, without cropping or a configured aspect ratio. Videos preload metadata so their dimensions are available even when motion is paused. Pop-ups preserve those proportions and scale media to the available width and viewport height. Empty placeholders use a minimum height until you add media.
+Cards fill their available width and follow the original media proportions without cropping. Image dimensions and video poster dimensions reserve space before loading. Videos have no active source until a visible preview can play or its dialog is opened, preventing offscreen cards and closed dialogs from downloading duplicate videos during the initial page load. Reduced motion keeps previews on their posters; the dialog still allows manual playback. Pop-ups preserve those proportions and scale media to the available width and viewport height. Empty placeholders use a minimum height until you add media.
 
 Entries split evenly between the two desktop columns; an odd extra entry goes in the left column. Four quests produce two cards in each column. Mobile reads the first column followed by the second, matching the source and keyboard order.
 
@@ -183,7 +183,7 @@ The top of `src/styles/global.css` preserves the 13 source palette tokens. Chang
 
 The Hero and Now galleries share `CardStack.astro` and the card-stack section in `src/scripts/site.ts`. They advance every five seconds while visible and idle. Hover, focus, hidden tabs, local pause, reduced motion, and the global motion preference stop autoplay. Manual Shuffle remains available under reduced motion.
 
-The intro plays once per tab session. Words blur and slide into place, then the cards rise together and fan out using the timing and easing from `animation-reference.json`. Autoplay waits until this entrance finishes. Open a new tab, or clear the `portfolio-intro` session-storage entry in browser developer tools, to review it again.
+The intro plays once per tab session. The hero heading is visible immediately and its words slide gently into place; it avoids opacity and blur effects that delayed the largest contentful paint. Cards then rise together and fan out using the existing timing and easing. Autoplay waits until this entrance finishes. Open a new tab, or clear the `portfolio-intro` session-storage entry in browser developer tools, to review it again.
 
 Every page enters with a short fade upward, including Back/Forward cache restores. The dock uses one moving highlight that changes shape during section transitions; mobile labels expand smoothly. On Home, the brand scrolls to the document top without reloading. On other pages, it links back to Home.
 
