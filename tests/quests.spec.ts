@@ -7,6 +7,51 @@ const tilt = (card: import('@playwright/test').Locator) =>
     y: parseFloat(element.style.getPropertyValue('--quest-tilt-y')) || 0,
   }));
 
+test('Quest videos stay deferred until visible or explicitly opened', async ({ page }) => {
+  const mediaRequests: string[] = [];
+  page.on('request', (request) => {
+    if (new URL(request.url()).pathname.endsWith('.mp4')) mediaRequests.push(request.url());
+  });
+  await page.goto('/');
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      ),
+  );
+  expect(mediaRequests).toEqual([]);
+  const videoQuest = quests.find((quest) => quest.type === 'video')!;
+  const card = page.locator(`[data-quest-open="quest-${videoQuest.id}"]`);
+  await card.scrollIntoViewIfNeeded();
+  // The default reduced-motion preference keeps the preview on its poster.
+  expect(mediaRequests).toEqual([]);
+  const preview = card.locator('video');
+  expect(
+    await preview.evaluate(
+      (video) => Number(video.getAttribute('width')) / Number(video.getAttribute('height')),
+    ),
+  ).toBeGreaterThan(0);
+  const before = await preview.boundingBox();
+  await card.click();
+  const dialog = page.locator(`#quest-${videoQuest.id}`);
+  await expect(dialog).toBeVisible();
+  await expect.poll(() => mediaRequests.length).toBeGreaterThan(0);
+  expect(
+    await dialog
+      .locator('video')
+      .evaluate(
+        (video) => (video as HTMLVideoElement).controls && (video as HTMLVideoElement).paused,
+      ),
+  ).toBe(true);
+  await page.keyboard.press('Escape');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await expect
+    .poll(() => preview.evaluate((video) => (video as HTMLVideoElement).videoWidth))
+    .toBeGreaterThan(0);
+  const after = await preview.boundingBox();
+  expect(after!.height).toBeCloseTo(before!.height, 0);
+});
+
 test('Quest columns balance their cards and preserve source order on mobile', async ({
   page,
   isMobile,

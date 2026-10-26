@@ -5,6 +5,8 @@ import '@fontsource-variable/hanken-grotesk/wght-italic.css';
 import '@fontsource/space-mono/400.css';
 import '@fontsource/space-mono/700.css';
 import '@fontsource/gloria-hallelujah/400.css';
+import headingFont from '@fontsource-variable/sora/files/sora-latin-wght-normal.woff2?url';
+import bodyFont from '@fontsource-variable/hanken-grotesk/files/hanken-grotesk-latin-wght-normal.woff2?url';
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -77,6 +79,8 @@ const structuredData = {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
+    <link rel="preload" href={headingFont} as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href={bodyFont} as="font" type="font/woff2" crossorigin="anonymous" />
     {import.meta.env.PROD && <script
       is:inline
       data-google-analytics
@@ -92,10 +96,20 @@ const structuredData = {
         // Enhanced measurement handles page loads and case-study history changes.
         window.gtag('config', measurementId);
 
-        const tag = document.createElement('script');
-        tag.async = true;
-        tag.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
-        document.head.append(tag);
+        function loadAnalytics() {
+          const tag = document.createElement('script');
+          tag.async = true;
+          tag.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+          document.head.append(tag);
+        }
+        // Queue measurement immediately; give the page's critical resources priority.
+        function scheduleAnalytics() {
+          if ('requestIdleCallback' in window)
+            window.requestIdleCallback(loadAnalytics, { timeout: 2000 });
+          else setTimeout(loadAnalytics, 0);
+        }
+        if (document.readyState === 'complete') scheduleAnalytics();
+        else window.addEventListener('load', scheduleAnalytics, { once: true });
       }
     </script>}
     <meta name="description" content={description} />

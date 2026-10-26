@@ -322,7 +322,7 @@ html:not([data-enhanced]) .back-to-top {
   font-weight: 700;
   white-space: nowrap;
   transition:
-    background 0.2s,
+    background-color 0.2s,
     color 0.25s,
     gap 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -454,12 +454,10 @@ button[aria-pressed='true'] > .control-play-icon {
   100% {
     opacity: 0.85;
     transform: scale(0.9);
-    box-shadow: 0 0 0 0 #8cbe2e00;
   }
   50% {
     opacity: 1;
     transform: scale(1.08);
-    box-shadow: 0 0 0 6px #8cbe2e22;
   }
 }
 .hero h1 {
@@ -1986,7 +1984,7 @@ svg[id^='case-flow-'] * {
 }
 
 /* Enhancement-only entrances: without JS, content remains visible. */
-html[data-page-enter] main {
+html[data-page-enter]:not([data-page='home']) main {
   animation: enter-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 html[data-intro='enter'] .hero-intro .availability {
@@ -2039,13 +2037,9 @@ html[data-intro='enter'] .dock {
 }
 @keyframes word-enter {
   from {
-    opacity: 0;
-    filter: blur(9px);
-    transform: translateY(0.65em);
+    transform: translateY(0.25em);
   }
   to {
-    opacity: 1;
-    filter: blur(0);
     transform: none;
   }
 }
