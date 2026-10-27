@@ -298,6 +298,7 @@ html:not([data-enhanced]) .back-to-top {
   left: 50%;
   bottom: max(42px, env(safe-area-inset-bottom));
   transform: translateX(-50%);
+  width: max-content;
   display: flex;
   align-items: center;
   gap: 2px;
@@ -1338,6 +1339,66 @@ html:not([data-page='home']) .site-footer {
   font-size: 14px;
   margin-top: 10px;
 }
+/* Group portrait screenshots without cropping their content or captions. */
+.case-prose .case-gallery {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 32px;
+  margin-block: 32px 40px;
+}
+.case-prose .case-gallery > figure {
+  min-width: 0;
+  margin: 0;
+}
+.case-prose .case-gallery > figure > :is(.image-zoom-trigger, img, picture) {
+  display: block;
+  width: 100%;
+  margin: 0;
+  border: 1px solid var(--color-light-2);
+  border-radius: var(--featured-radius);
+  background: var(--card-surface);
+  box-shadow: var(--card-shadow);
+  transition: transform 0.3s ease;
+}
+.case-prose .case-gallery img:not(.icon) {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0;
+}
+.case-prose .case-gallery figcaption {
+  margin-top: 14px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.65;
+}
+@media (min-width: 1001px) {
+  .case-prose .case-gallery {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+  .case-gallery-staircase > figure {
+    --gallery-angle: -7deg;
+  }
+  .case-prose .case-gallery-staircase > figure:nth-child(2) {
+    --gallery-angle: -5deg;
+    margin-top: 28px;
+  }
+  .case-prose .case-gallery-staircase > figure:nth-child(3) {
+    --gallery-angle: -3deg;
+    margin-top: 56px;
+  }
+  .case-gallery-staircase > figure > :is(.image-zoom-trigger, img, picture) {
+    transform: perspective(1200px) rotateY(var(--gallery-angle));
+  }
+  html[data-motion='running']
+    .case-gallery-staircase
+    > figure
+    > .image-zoom-trigger:is(:hover, :focus-visible) {
+    transform: perspective(1200px) rotateY(0deg) translateY(-4px);
+  }
+}
 .prose blockquote {
   border-left: 3px solid var(--color-accent-deep-1);
   padding: 12px 20px;
@@ -2092,6 +2153,7 @@ html[data-motion='paused'] .dock-link,
 html[data-motion='paused'] .case-toggle::before,
 html[data-motion='paused'] .case-toggle-link,
 html[data-motion='paused'] .image-zoom-overlay,
+html[data-motion='paused'] .case-gallery > figure > .image-zoom-trigger,
 html[data-motion='paused'] .case-prose table :is(th, td),
 html[data-motion='paused'] .menu-icon,
 html[data-motion='paused'] .menu-line,

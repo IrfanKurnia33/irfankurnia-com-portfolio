@@ -12,6 +12,7 @@ test('case-study images show the zoom hint and open an accessible, fitted previe
   const caption = await figure.locator('figcaption').textContent();
   await trigger.scrollIntoViewIfNeeded();
   await expect(source).toBeVisible();
+  await source.evaluate((image) => (image as HTMLImageElement).decode());
   await trigger.hover();
   await expect(trigger.locator('.image-zoom-overlay')).toHaveCSS('opacity', '1');
   await expect(trigger).toContainText('Click to zoom the image');

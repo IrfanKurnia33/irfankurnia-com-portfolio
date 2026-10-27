@@ -6,6 +6,7 @@ interface Diagram {
   canvas: HTMLElement;
   text: string;
   label: string;
+  type: 'flowchart' | 'state';
   direction?: 'LR' | 'TD';
 }
 
@@ -49,6 +50,13 @@ export function initCaseDiagrams(article: HTMLElement) {
             rankSpacing: 48,
             wrappingWidth: 220,
             curve: 'rounded',
+          },
+          state: {
+            useMaxWidth: false,
+            padding: 20,
+            nodeSpacing: 32,
+            rankSpacing: 48,
+            wrappingWidth: 220,
           },
           // Apply label typography during measurement as well as in the final SVG.
           themeCSS: `
@@ -114,10 +122,15 @@ export function initCaseDiagrams(article: HTMLElement) {
         try {
           const mermaid = await loadMermaid();
           if (!diagram.frame.isConnected) continue;
-          const text = diagram.text.replace(
-            /^(\s*(?:flowchart|graph)\s+)(?:LR|RL|TD|TB|BT)\b/m,
-            `$1${direction}`,
-          );
+          // State diagrams use a separate direction statement and call top-down "TB".
+          // The final root statement overrides an authored direction without changing nested states.
+          const text =
+            diagram.type === 'state'
+              ? `${diagram.text}\n direction ${direction === 'TD' ? 'TB' : direction}\n`
+              : diagram.text.replace(
+                  /^(\s*(?:flowchart|graph)\s+)(?:LR|RL|TD|TB|BT)\b/m,
+                  `$1${direction}`,
+                );
           const id = `case-flow-${++sequence}`;
           const { svg } = await mermaid.render(id, text);
           if (!diagram.frame.isConnected) continue;
@@ -143,7 +156,9 @@ export function initCaseDiagrams(article: HTMLElement) {
       if (source.closest('.case-diagram')) return;
       let heading = source.previousElementSibling;
       while (heading && !heading.matches('h2, h3, h4')) heading = heading.previousElementSibling;
-      const label = `${heading?.textContent?.trim() || 'Case study'} flowchart`;
+      const text = source.textContent || '';
+      const type = /^[\t ]*stateDiagram(?:-v2)?\b/m.test(text) ? 'state' : 'flowchart';
+      const label = `${heading?.textContent?.trim() || 'Case study'} ${type === 'state' ? 'state diagram' : 'flowchart'}`;
       const frame = document.createElement('div');
       frame.className = 'case-diagram';
       frame.tabIndex = 0;
@@ -154,7 +169,7 @@ export function initCaseDiagrams(article: HTMLElement) {
       canvas.hidden = true;
       source.replaceWith(frame);
       frame.append(source, canvas);
-      diagrams.set(frame, { frame, source, canvas, text: source.textContent || '', label });
+      diagrams.set(frame, { frame, source, canvas, text, label, type });
     });
     if (diagrams.size) update();
   }

@@ -7,4 +7,8 @@ export default defineConfig({
   trailingSlash: 'always',
   devToolbar: { enabled: false },
   markdown: { processor: satteri({ mdastPlugins: [caseImageDimensions()] }) },
+  vite: {
+    // Pre-bundle Mermaid's lazy diagram modules before the first dev-page request.
+    optimizeDeps: { include: ['mermaid'] },
+  },
 });

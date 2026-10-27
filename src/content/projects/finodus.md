@@ -7,7 +7,7 @@ timeline: 4-day sprint
 date: October 2026
 tools: [Figma, Codex, React, TypeScript, Vite, BklitUI]
 cover: /projects/finodus/project-cover.png
-order: 1
+order: 2
 placeholder: false
 readingTime: 5 min
 toc:

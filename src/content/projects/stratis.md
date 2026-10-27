@@ -7,7 +7,7 @@ timeline: 5-day sprint
 date: September 2026
 tools: [Figma, Codex, React, TypeScript, Vite, shadcn/ui]
 cover: /projects/stratis/cover.png
-order: 2
+order: 3
 placeholder: false
 readingTime: 5 min
 toc:

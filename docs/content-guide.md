@@ -89,6 +89,8 @@ Explain the decision and the evidence behind it.
 
 Cover images and article images automatically show a dark zoom overlay with the supplied zoom icon. Click or keyboard-activate an image to open a larger preview over a blurred background. Click outside the image, press Escape, or use the close button to dismiss it. Captions remain with their figures. This applies to both Full and TL;DR versions, including after switching between them; no extra Markdown attributes are needed. Images remain visible without JavaScript.
 
+For three portrait screenshots, wrap their existing `<figure>` elements in `<div class="case-gallery case-gallery-staircase" role="group" aria-label="Describe this image group">...</div>`. Screenshots sit side by side above 1000px, with stepped spacing and a subtle perspective. They stack on narrower screens. Each image keeps its full proportions, caption, and automatic zoom behavior; the same markup works in Full and TL;DR articles. Use `case-gallery` alone for a straight three-column row without the staircase treatment.
+
 Use shared metric cards for business numbers. State whether each number is measured, a target, or an illustrative projection, and give its source or assumptions immediately below:
 
 ```html
@@ -126,6 +128,8 @@ flowchart LR
 ```
 
 Flowcharts automatically use left-to-right layout above 700px and top-down layout on smaller screens, including when resizing or switching versions. The boxes share the featured image placeholder's gradient, 17px radius, border, and layered shadows, with local Hanken Grotesk labels and Sora for bold headings. Wide desktop flows scroll inside the article; mobile diagrams fit their available width. Add `accTitle` and `accDescr` for a meaningful accessible title and explanation. The original code remains readable if JavaScript is disabled or a diagram cannot render. Mermaid loads only when the selected article contains a diagram.
+
+Fenced `mermaid` blocks also support [`stateDiagram-v2`](https://mermaid.js.org/syntax/stateDiagram.html) for states and transitions. These receive the same styling and responsive layout; the renderer supplies Mermaid's `direction LR` on desktop and `direction TB` on mobile. Authored nested-state directions and the original source remain intact.
 
 External web links in both Full and TL;DR case studies automatically open in a new tab. Continue writing normal Markdown links; internal links and section anchors stay in the same tab.
 
