@@ -1,13 +1,12 @@
 export const site = {
   name: 'Irfan Kurnia',
+  googleAnalyticsId: 'G-6YM4RQM063',
   title: 'Irfan Kurnia — Product Designer',
   description:
     'Product designer and researcher based in Jakarta, designing for complex and regulated products. Explore selected work, experiments, and what I’m up to now.',
   email: 'hello@irfankurnia.com',
   availability: 'Open for full-time positions',
   updated: '2026-10-21',
-  // Switch off when the placeholder content has been replaced before publishing.
-  preview: true,
   links: {
     resume: 'https://drive.google.com/file/d/17gMCYyPDdTe7lJrLUO9WInuIbM_jtA83/view',
     linkedin: 'https://www.linkedin.com/in/irfankurnia33/',

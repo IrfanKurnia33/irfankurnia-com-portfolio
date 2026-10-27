@@ -5,6 +5,8 @@ import '@fontsource-variable/hanken-grotesk/wght-italic.css';
 import '@fontsource/space-mono/400.css';
 import '@fontsource/space-mono/700.css';
 import '@fontsource/gloria-hallelujah/400.css';
+import headingFont from '@fontsource-variable/sora/files/sora-latin-wght-normal.woff2?url';
+import bodyFont from '@fontsource-variable/hanken-grotesk/files/hanken-grotesk-latin-wght-normal.woff2?url';
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -16,8 +18,59 @@ interface Props {
   title?: string;
   description?: string;
   page?: 'home' | 'now' | 'work' | '404';
+  canonicalPath?: string;
 }
-const { title = site.title, description = site.description, page = 'home' } = Astro.props;
+const {
+  title = site.title,
+  description = site.description,
+  page = 'home',
+  canonicalPath = page === '404' ? '/404.html' : Astro.url.pathname,
+} = Astro.props;
+const siteUrl = Astro.site!.origin;
+const canonicalUrl = canonicalPath === '/' ? siteUrl : new URL(canonicalPath, siteUrl).href;
+const socialImage = new URL('/og-image.jpg', siteUrl).href;
+const socialImageAlt = 'irfankurnia.com — Product Designer & Strategist';
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': `${siteUrl}/#person`,
+      name: site.name,
+      url: siteUrl,
+      jobTitle: 'Product Designer',
+      sameAs: [
+        site.links.linkedin,
+        site.links.medium,
+        site.links.substack,
+        site.links.instagram,
+        site.links.tiktok,
+        site.links.twitter,
+        site.links.threads,
+      ],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}/#website`,
+      url: siteUrl,
+      name: site.name,
+      description: site.description,
+      inLanguage: 'en-US',
+      publisher: { '@id': `${siteUrl}/#person` },
+    },
+    {
+      '@type': page === 'home' ? 'ProfilePage' : 'WebPage',
+      '@id': `${canonicalUrl}#webpage`,
+      url: canonicalUrl,
+      name: title,
+      description,
+      inLanguage: 'en-US',
+      isPartOf: { '@id': `${siteUrl}/#website` },
+      about: { '@id': `${siteUrl}/#person` },
+      ...(page === 'home' && { mainEntity: { '@id': `${siteUrl}/#person` } }),
+    },
+  ],
+};
 ---
 
 <!doctype html>
@@ -26,21 +79,73 @@ const { title = site.title, description = site.description, page = 'home' } = As
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
+    <link rel="preload" href={headingFont} as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href={bodyFont} as="font" type="font/woff2" crossorigin="anonymous" />
+    {import.meta.env.PROD && <script
+      is:inline
+      data-google-analytics
+      define:vars={{ measurementId: site.googleAnalyticsId, hostname: Astro.site!.hostname }}
+    >
+      // Keep local previews and other hosts out of the live property's reports.
+      if (location.hostname === hostname || location.hostname === `www.${hostname}`) {
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () {
+          window.dataLayer.push(arguments);
+        };
+        window.gtag('js', new Date());
+        // Enhanced measurement handles page loads and case-study history changes.
+        window.gtag('config', measurementId);
+
+        function loadAnalytics() {
+          const tag = document.createElement('script');
+          tag.async = true;
+          tag.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+          document.head.append(tag);
+        }
+        // Queue measurement immediately; give the page's critical resources priority.
+        function scheduleAnalytics() {
+          if ('requestIdleCallback' in window)
+            window.requestIdleCallback(loadAnalytics, { timeout: 2000 });
+          else setTimeout(loadAnalytics, 0);
+        }
+        if (document.readyState === 'complete') scheduleAnalytics();
+        else window.addEventListener('load', scheduleAnalytics, { once: true });
+      }
+    </script>}
     <meta name="description" content={description} />
     <meta name="theme-color" content="#FAFEF5" />
-    {site.preview && <meta name="robots" content="noindex, nofollow" />}
+    <!-- Public indexing and link following are intentionally enabled. -->
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={canonicalUrl} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content="https://irfankurnia.com/social-card.png" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta
-      property="og:image:alt"
-      content="Irfan Kurnia — designing for complex and regulated products"
-    />
+    <meta property="og:image:alt" content={socialImageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="twitter:site" content="@irfankurnia33" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+    <meta name="twitter:image:alt" content={socialImageAlt} />
+    <link rel="icon" type="image/x-icon" sizes="any" href="/favicon/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" sizes="any" href="/favicon/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <script
+      is:inline
+      type="application/ld+json"
+      data-structured-data
+      set:html={JSON.stringify(structuredData).replace(/</g, '\\u003c')}
+    />
     <script is:inline>
       const root = document.documentElement;
       const prefersReducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;

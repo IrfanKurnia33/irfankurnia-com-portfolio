@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import CardStack from '../components/CardStack.astro';
 import ContactCards from '../components/ContactCards.astro';
@@ -7,6 +8,7 @@ import QuestMedia from '../components/QuestMedia.astro';
 import Icon from '../components/Icon.astro';
 import { quests } from '../data/quests';
 import { site } from '../data/site';
+import { publicImage } from '../lib/public-images';
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 const questMidpoint = Math.ceil(quests.length / 2);
 const questColumns = [quests.slice(0, questMidpoint), quests.slice(questMidpoint)];
@@ -77,44 +79,57 @@ const logos = [
       Selected Work
     </h2>
     <div class="work-grid">
-      {projects.map((project) => (
-        <a class="project-card" href={`/work/${project.id}/`} data-reveal>
-          <div class:list={['project-cover', { 'finodus-cover': project.id === 'finodus' }]}>
-            {project.data.cover ? (
-              <img src={project.data.cover} alt="" loading="lazy" width="960" height="560" />
-            ) : (
-              <>
-                <span class="cover-index">0{project.data.order} / SELECTED WORK</span>
-                <span class="cover-title">
-                  {project.id === 'finodus' ? 'Finodus' : 'Your next\ncase study.'}
+      {projects.map((project) => {
+        const cover = publicImage(project.data.cover);
+        return (
+          <a class="project-card" href={`/work/${project.id}/`} data-reveal>
+            <div class:list={['project-cover', { 'finodus-cover': project.id === 'finodus' }]}>
+              {cover ? (
+                <Image
+                  src={cover}
+                  alt=""
+                  widths={[360, 480, 720, 960]}
+                  sizes="(max-width: 700px) calc(100vw - 48px), (max-width: 1000px) calc((100vw - 88px) / 2), 468px"
+                  width={960}
+                  loading="lazy"
+                  format="webp"
+                />
+              ) : project.data.cover ? (
+                <img src={project.data.cover} alt="" loading="lazy" width="960" height="560" />
+              ) : (
+                <>
+                  <span class="cover-index">0{project.data.order} / SELECTED WORK</span>
+                  <span class="cover-title">
+                    {project.id === 'finodus' ? 'Finodus' : 'Your next\ncase study.'}
+                  </span>
+                  <span class="cover-note">
+                    Image placeholder <span aria-hidden="true">↗</span>
+                  </span>
+                </>
+              )}
+            </div>
+            <div class="project-copy">
+              <h3>
+                {project.data.title}
+                <span class="project-arrow" aria-hidden="true">
+                  ↗
                 </span>
-                <span class="cover-note">
-                  Image placeholder <span aria-hidden="true">↗</span>
+              </h3>
+              <p>{project.data.summary}</p>
+              <ul class="tags" aria-label="Project categories">
+                {project.data.tags.map((tag) => (
+                  <li>{tag}</li>
+                ))}
+              </ul>
+              {project.data.placeholder && (
+                <span class="draft-note">
+                  {project.id === 'finodus' ? 'Draft case study' : 'Placeholder project'}
                 </span>
-              </>
-            )}
-          </div>
-          <div class="project-copy">
-            <h3>
-              {project.data.title}
-              <span class="project-arrow" aria-hidden="true">
-                ↗
-              </span>
-            </h3>
-            <p>{project.data.summary}</p>
-            <ul class="tags" aria-label="Project categories">
-              {project.data.tags.map((tag) => (
-                <li>{tag}</li>
-              ))}
-            </ul>
-            {project.data.placeholder && (
-              <span class="draft-note">
-                {project.id === 'finodus' ? 'Draft case study' : 'Placeholder project'}
-              </span>
-            )}
-          </div>
-        </a>
-      ))}
+              )}
+            </div>
+          </a>
+        );
+      })}
     </div>
   </section>
   <section

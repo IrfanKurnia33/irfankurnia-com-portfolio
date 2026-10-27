@@ -205,6 +205,26 @@ export function initCaseStudy(motionPaused: () => boolean) {
     }
     document.title = link.dataset.pageTitle!;
     document.querySelector('meta[property="og:title"]')?.setAttribute('content', document.title);
+    document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', document.title);
+    const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (canonical) {
+      const canonicalUrl = new URL(link.pathname, canonical.href).href;
+      canonical.href = canonicalUrl;
+      document.querySelector('meta[property="og:url"]')?.setAttribute('content', canonicalUrl);
+      const schema = document.querySelector<HTMLScriptElement>('[data-structured-data]');
+      if (schema?.textContent) {
+        const data = JSON.parse(schema.textContent);
+        const webPage = data['@graph'].find(
+          (entity: Record<string, unknown>) => entity['@type'] === 'WebPage',
+        );
+        if (webPage) {
+          webPage['@id'] = `${canonicalUrl}#webpage`;
+          webPage.url = canonicalUrl;
+          webPage.name = document.title;
+          schema.textContent = JSON.stringify(data);
+        }
+      }
+    }
     if (status) {
       status.textContent =
         mode === 'full' ? 'Full case study selected.' : 'TL;DR version selected.';

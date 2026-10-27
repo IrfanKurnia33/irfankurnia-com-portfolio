@@ -142,22 +142,28 @@ const dockLinks = [...document.querySelectorAll<HTMLAnchorElement>('[data-sectio
 const dockIndicator = dock?.querySelector<HTMLElement>('.dock-indicator');
 let dockActive: HTMLAnchorElement | undefined;
 let dockMorph: Animation | undefined;
+const dockBounds = new WeakMap<
+  HTMLAnchorElement,
+  { width: number; height: number; left: number; top: number }
+>();
 function positionDockIndicator() {
   if (!dock || !dockIndicator || !dockActive) return;
-  dockIndicator.style.width = `${dockActive.offsetWidth}px`;
-  dockIndicator.style.height = `${dockActive.offsetHeight}px`;
-  dockIndicator.style.transform = `translate(${dockActive.offsetLeft}px, ${dockActive.offsetTop}px)`;
+  const bounds = dockBounds.get(dockActive);
+  if (!bounds) return;
+  dockIndicator.style.width = `${bounds.width}px`;
+  dockIndicator.style.height = `${bounds.height}px`;
+  dockIndicator.style.transform = `translate(${bounds.left}px, ${bounds.top}px)`;
+  if (!dock.hasAttribute('data-indicator-ready'))
+    requestAnimationFrame(() => {
+      dock.dataset.indicatorReady = 'true';
+    });
 }
 function setDockActive(link: HTMLAnchorElement) {
   if (!dock || !dockIndicator || dockActive === link) return;
   const previous = dockActive;
   dockActive = link;
   positionDockIndicator();
-  if (!dock.hasAttribute('data-indicator-ready')) {
-    // Commit the initial position before enabling transitions.
-    dockIndicator.getBoundingClientRect();
-    dock.dataset.indicatorReady = 'true';
-  } else if (previous && !motionPaused()) {
+  if (previous && !motionPaused()) {
     dockMorph?.cancel();
     dockMorph = dockIndicator.animate(
       [
@@ -171,7 +177,14 @@ function setDockActive(link: HTMLAnchorElement) {
   }
 }
 if (dock) {
-  const dockResize = new ResizeObserver(positionDockIndicator);
+  // Read layout after the browser has measured it, then update the indicator.
+  const dockResize = new ResizeObserver(() => {
+    for (const link of dockLinks) {
+      const { offsetWidth: width, offsetHeight: height, offsetLeft: left, offsetTop: top } = link;
+      dockBounds.set(link, { width, height, left, top });
+    }
+    positionDockIndicator();
+  });
   dockResize.observe(dock);
   dockLinks.forEach((link) => dockResize.observe(link));
   document.addEventListener('portfolio:motion', () => {
@@ -184,7 +197,7 @@ if (dock) {
 const sections = [...document.querySelectorAll<HTMLElement>('.home-section')];
 let scrollScheduled = false;
 function updateSection() {
-  header?.classList.toggle('is-scrolled', window.scrollY > 25);
+  const scrolled = window.scrollY > 25;
   if (sections.length) {
     const marker = window.innerHeight * 0.4;
     let current = sections[0];
@@ -200,6 +213,7 @@ function updateSection() {
     const activeLink = dockLinks.find((link) => link.dataset.sectionLink === current.id);
     if (activeLink) setDockActive(activeLink);
   }
+  header?.classList.toggle('is-scrolled', scrolled);
   scrollScheduled = false;
 }
 window.addEventListener(
@@ -213,8 +227,7 @@ window.addEventListener(
   { passive: true },
 );
 window.addEventListener('resize', updateSection);
-window.addEventListener('pageshow', updateSection);
-updateSection();
+window.addEventListener('pageshow', () => requestAnimationFrame(updateSection));
 
 // Progressive reveal: elements remain visible before the observer runs.
 const reveals = new IntersectionObserver(
@@ -359,6 +372,14 @@ if (document.querySelector('[data-clock]')) {
 }
 
 // Quest cards and case-study images share modal motion and dismissal behavior.
+function loadVideo(video: HTMLVideoElement) {
+  if (!video.getAttribute('src') && video.dataset.videoSrc) {
+    video.preload = 'metadata';
+    video.src = video.dataset.videoSrc;
+    video.load();
+  }
+}
+
 initQuestTilt(motionPaused);
 document.querySelectorAll<HTMLButtonElement>('[data-quest-open]').forEach((button) => {
   const dialog = document.getElementById(button.dataset.questOpen!) as HTMLDialogElement;
@@ -366,7 +387,10 @@ document.querySelectorAll<HTMLButtonElement>('[data-quest-open]').forEach((butto
   button.addEventListener('click', () => {
     modal.open(button);
     const video = dialog.querySelector('video');
-    if (video && !motionPaused()) void video.play().catch(() => {});
+    if (video) {
+      loadVideo(video);
+      if (!motionPaused()) void video.play().catch(() => {});
+    }
   });
   dialog.addEventListener('close', () => {
     dialog.querySelector('video')?.pause();
@@ -376,9 +400,10 @@ const videos = document.querySelectorAll<HTMLVideoElement>('.quest-card video');
 const videoVisibility = new IntersectionObserver((entries) => {
   for (const entry of entries) {
     const video = entry.target as HTMLVideoElement;
-    if (entry.isIntersecting && !motionPaused() && !document.hidden)
+    if (entry.isIntersecting && !motionPaused() && !document.hidden) {
+      loadVideo(video);
       void video.play().catch(() => {});
-    else video.pause();
+    } else video.pause();
   }
 });
 videos.forEach((video) => videoVisibility.observe(video));

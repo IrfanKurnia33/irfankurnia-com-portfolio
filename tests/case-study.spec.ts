@@ -14,7 +14,7 @@ test('case study switches Markdown and TOC in place, with keyboard and browser h
   const tldr = toggle.getByRole('link', { name: 'TL;DR Version', exact: true });
   const toc = page.locator('.toc nav');
   await expect(full).toHaveAttribute('aria-current', 'page');
-  await expect(toc.locator('a')).toHaveCount(8);
+  await expect(toc.locator('a')).toHaveCount(5);
 
   await tldr.scrollIntoViewIfNeeded();
   const initialScroll = await page.evaluate(() => scrollY);
@@ -30,34 +30,36 @@ test('case study switches Markdown and TOC in place, with keyboard and browser h
   await expect(toc.locator('a')).toHaveCount(3);
   await expect(page.locator('.case-prose h2')).toHaveText([
     'The problem',
-    'My contribution',
-    'Outcome and status',
+    'Projected opportunity',
+    'Next Steps',
   ]);
   expect(await page.evaluate(() => performance.timeOrigin)).toBe(timeOrigin);
   expect(Math.abs((await page.evaluate(() => scrollY)) - initialScroll)).toBeLessThan(2);
 
   if (isMobile) await page.locator('.toc summary').click();
-  await toc.getByRole('link', { name: /Outcome and status/ }).click();
-  await expect(page.locator('#outcome-and-status')).toBeInViewport();
-  await expect(page).toHaveURL(/#outcome-and-status$/);
+  await toc.getByRole('link', { name: /Next Steps/ }).click();
+  await expect(page.locator('#next-steps')).toBeInViewport();
+  await expect(page).toHaveURL(/#next-steps$/);
   if (isMobile) await expect(page.locator('.toc details')).not.toHaveAttribute('open');
   await full.click();
   await expect(page).toHaveURL('/work/finodus/full/?source=review');
-  await expect(toc.locator('a')).toHaveCount(8);
-  await expect(page.locator('.case-prose')).toContainText('Research and insights');
+  await expect(toc.locator('a')).toHaveCount(5);
+  await expect(page.locator('.case-prose')).toContainText(
+    'Turn evidence into a reviewable decision',
+  );
 
   await page.goBack();
   await expect(tldr).toHaveAttribute('aria-current', 'page');
   await expect(page.locator('.case-prose h2')).toHaveCount(3);
   await page.goForward();
   await expect(full).toHaveAttribute('aria-current', 'page');
-  await expect(page.locator('.case-prose h2')).toHaveCount(8);
+  await expect(page.locator('.case-prose h2')).toHaveCount(5);
   await tldr.click();
   await page.reload();
   await expect(tldr).toHaveAttribute('aria-current', 'page');
   await expect(page.locator('.case-prose h2')).toHaveCount(3);
   await full.click();
-  await expect(page.locator('.case-prose h2')).toHaveCount(8);
+  await expect(page.locator('.case-prose h2')).toHaveCount(5);
   expect(errors).toEqual([]);
 });
 
@@ -109,11 +111,11 @@ test('version links and Markdown work without JavaScript', async ({
     await page.getByRole('link', { name: 'TL;DR Version', exact: true }).click();
     await expect(page).toHaveURL('/work/finodus/');
     await expect(page.locator('.case-prose h2')).toHaveCount(3);
-    await page.getByRole('link', { name: /My contribution/ }).click();
-    await expect(page.locator('#my-contribution')).toBeInViewport();
+    await page.getByRole('link', { name: /Projected opportunity/ }).click();
+    await expect(page.locator('#projected-opportunity')).toBeInViewport();
     await page.getByRole('link', { name: 'Full Case Study', exact: true }).click();
     await expect(page).toHaveURL('/work/finodus/full/');
-    await expect(page.locator('.case-prose h2')).toHaveCount(8);
+    await expect(page.locator('.case-prose h2')).toHaveCount(5);
   } finally {
     await context.close();
   }

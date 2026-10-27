@@ -24,6 +24,7 @@ export const quests: Quest[] = [
       'Using LottieLab to animate the hero section for my portfolio website (what you saw earlier).',
     type: 'video',
     media: '/quests/hero-section.mp4',
+    poster: '/quests/hero-section-poster.webp',
   },
   {
     id: '03',
@@ -31,6 +32,7 @@ export const quests: Quest[] = [
     description: 'Mobile app for UNHWIs to manage their assets and investments.',
     type: 'video',
     media: '/quests/fintivio-mobile-app.mp4',
+    poster: '/quests/fintivio-mobile-app-poster.webp',
   },
   {
     id: '04',

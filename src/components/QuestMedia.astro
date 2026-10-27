@@ -1,10 +1,16 @@
 ---
 import type { Quest } from '../data/quests';
+import { Image, getImage } from 'astro:assets';
+import { publicImage } from '../lib/public-images';
 interface Props {
   quest: Quest;
   modal?: boolean;
 }
 const { quest, modal = false } = Astro.props;
+const image = quest.type !== 'video' ? publicImage(quest.media) : undefined;
+const poster = publicImage(quest.poster);
+const optimizedPoster =
+  poster && (await getImage({ src: poster, width: Math.min(720, poster.width), format: 'webp' }));
 ---
 
 <div
@@ -17,15 +23,33 @@ const { quest, modal = false } = Astro.props;
   {quest.media ? (
     quest.type === 'video' ? (
       <video
-        src={quest.media}
-        poster={quest.poster}
+        data-video-src={quest.media}
+        poster={optimizedPoster?.src ?? quest.poster}
+        width={poster?.width}
+        height={poster?.height}
         muted
         loop
         playsinline
-        preload="metadata"
+        preload="none"
         controls={modal}
         aria-label={quest.title}
-      ></video>
+      >
+        <a href={quest.media}>Watch {quest.title}</a>
+      </video>
+    ) : image ? (
+      <Image
+        src={image}
+        alt={quest.title}
+        widths={modal ? [720, 1080, 1440, 1920] : [360, 480, 720, 960]}
+        sizes={
+          modal
+            ? '(max-width: 752px) calc(100vw - 72px), 680px'
+            : '(max-width: 700px) calc(100vw - 48px), (max-width: 1000px) calc((100vw - 88px) / 2), 468px'
+        }
+        width={modal ? Math.min(1920, image.width) : 960}
+        loading="lazy"
+        format="webp"
+      />
     ) : (
       <img src={quest.media} alt={quest.title} loading="lazy" />
     )

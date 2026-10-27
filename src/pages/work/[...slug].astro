@@ -1,11 +1,13 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
 import CaseToggle from '../../components/CaseToggle.astro';
 import CaseStudyBody from '../../components/CaseStudyBody.astro';
 import ImageDialog from '../../components/ImageDialog.astro';
 import { publicImageDimensions } from '../../lib/case-image-dimensions.mjs';
+import { publicImage } from '../../lib/public-images';
 export async function getStaticPaths() {
   const [projects, summaries] = await Promise.all([
     getCollection('projects'),
@@ -40,6 +42,7 @@ interface Props {
 }
 const { project, summary, mode } = Astro.props;
 const coverSize = await publicImageDimensions(project.data.cover);
+const cover = publicImage(project.data.cover);
 const pageTitle = `${project.data.title}${mode === 'tldr' ? ' — TL;DR' : ''} — Irfan Kurnia`;
 const alternateMode = mode === 'full' ? 'tldr' : 'full';
 const projectLinkTypes = {
@@ -49,7 +52,12 @@ const projectLinkTypes = {
 };
 ---
 
-<Base page="work" title={pageTitle} description={project.data.summary}>
+<Base
+  page="work"
+  title={pageTitle}
+  description={project.data.summary}
+  canonicalPath={`/work/${project.id}/${mode === 'full' ? 'full/' : ''}`}
+>
   <article class="case-study container" data-case-study>
     <a class="back-link" href="/#work">
       <Icon name="back" />
@@ -96,7 +104,18 @@ const projectLinkTypes = {
       </dl>
     </header>
     <div class="case-featured">
-      {project.data.cover ? (
+      {cover ? (
+        <Image
+          src={cover}
+          alt={`${project.data.title} — project overview`}
+          widths={[480, 720, 960, 1440, 1920]}
+          sizes="(max-width: 700px) calc(100vw - 80px), (max-width: 1000px) calc(100vw - 144px), 880px"
+          width={Math.min(1920, cover.width)}
+          loading="eager"
+          fetchpriority="high"
+          format="webp"
+        />
+      ) : project.data.cover ? (
         <img
           src={project.data.cover}
           alt={`${project.data.title} — project overview`}

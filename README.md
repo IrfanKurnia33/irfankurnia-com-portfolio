@@ -37,6 +37,8 @@ The mobile profile uses Chromium device emulation; it does not replace testing o
 
 See [the content guide](docs/content-guide.md) for projects, quests, photos, links, and update dates. See [verification notes](docs/verification.md) for tested scenarios and remaining limitations.
 
+See [the performance review](docs/performance-review.md) for the PageSpeed-driven changes, local measurements, and the Vercel domain setting that affects the canonical URL's response time.
+
 Each case study pairs a full article in `src/content/projects/<slug>.md` with a short article in `src/content/projects/tldr/<slug>.md`. Shared metadata lives in the full file. TL;DR opens at `/work/<slug>/` by default; Full lives at `/work/<slug>/full/`. Previous `/tldr/` links remain valid. Each version can configure its reading time and TOC labels in Markdown; see the content guide for reusable metric cards, notes, and glossaries.
 
 The application has three main layers:
@@ -51,6 +53,8 @@ Run `npm run format` to format your edits. It skips the original reference docum
 
 ## Before publishing
 
-This milestone is local only. The site currently marks every page `noindex, nofollow` through `site.preview` because draft projects and media remain. Complete [the content checklist](docs/content-guide.md#remaining-content-checklist), set `preview: false`, confirm the social-sharing image URL in `Base.astro`, and rebuild before a later deployment.
+Public indexing and link following are intentionally enabled with `index, follow`. The production domain is `https://irfankurnia.com` in `astro.config.mjs`; the shared layout generates canonical URLs, social metadata, and JSON-LD. The sharing image is `public/og-image.jpg`, favicons live in `public/favicon/`, and Android home-screen settings live in `public/manifest.json`. Review [the content checklist](docs/content-guide.md#remaining-content-checklist) and rebuild before deployment.
 
-No CMS, database, runtime server, analytics, or API keys are required.
+Google Analytics 4 uses measurement ID `G-6YM4RQM063`, configured in `src/data/site.ts`. It loads asynchronously in production builds on `irfankurnia.com` and `www.irfankurnia.com`; local previews and other hosts do not load the tag. See [analytics settings and verification](docs/content-guide.md#google-analytics) for case-study history tracking and checking the deployed site.
+
+No CMS, database, runtime server, or API keys are required.
